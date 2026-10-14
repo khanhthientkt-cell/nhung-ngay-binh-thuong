@@ -78,6 +78,9 @@
       hotspotIcon,
       el('span', { class: 'sr-only hotspot__label' })
     ]);
+    // Ảnh thật (polaroid) phủ lên tranh ở những nhịp có ảnh; nút chạm luôn nằm trên cùng.
+    const photoStage = NNBT.photos ? NNBT.photos.stage() : null;
+    if (photoStage) figure.append(photoStage.node);
     figure.append(hotspot);
 
     // Chữ & nút
@@ -113,6 +116,16 @@
       });
       const title = figure.querySelector('title');
       if (title) title.textContent = beat.alt || '';
+
+      // Ảnh thật: có thì hiện polaroid và ẩn tranh khỏi trình đọc màn hình (ảnh tự có mô tả riêng).
+      const svgEl = figure.querySelector('svg.scene-art');
+      if (photoStage && beat.photos && beat.photos.length) {
+        photoStage.show(beat.photos);
+        if (svgEl) svgEl.setAttribute('aria-hidden', 'true');
+      } else {
+        if (photoStage) photoStage.hide();
+        if (svgEl) svgEl.removeAttribute('aria-hidden');
+      }
 
       // Chữ
       textBox.textContent = '';

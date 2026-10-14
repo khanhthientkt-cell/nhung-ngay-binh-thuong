@@ -1,0 +1,89 @@
+/*
+ * decor.css — Trang trí nền (js/components/decor.js) và băng dính washi trên ảnh polaroid.
+ * Nằm sau nội dung, không nhận thao tác, không chuyển động.
+ */
+
+.decor {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+}
+.stage { position: relative; z-index: 1; }
+
+/* ---------- Nhành lá màu nước ở hai góc ---------- */
+
+.decor__sprig {
+  position: absolute;
+  width: clamp(120px, 22vw, 340px);
+  opacity: 0.55;
+}
+.decor__sprig-svg { width: 100%; height: auto; display: block; }
+.decor__sprig--tl { top: -10px; left: -10px; }
+.decor__sprig--br { right: -10px; bottom: -10px; transform: rotate(180deg); }
+
+@media (min-width: 900px) {
+  .decor__sprig { opacity: 0.85; }
+}
+
+/* ---------- Mảng màu nước mờ ở nền, đổi theo chủ đề ---------- */
+
+.decor__wash,
+.decor__doodles {
+  position: absolute;
+  inset: 0;
+  opacity: 0;
+  transition: opacity 900ms var(--ease);
+}
+.decor__doodles { display: none; }
+
+.decor[data-theme="home"] [data-theme="home"],
+.decor[data-theme="map"]  [data-theme="map"],
+.decor[data-theme="ch1"]  [data-theme="ch1"],
+.decor[data-theme="ch2"]  [data-theme="ch2"],
+.decor[data-theme="ch3"]  [data-theme="ch3"],
+.decor[data-theme="ch4"]  [data-theme="ch4"],
+.decor[data-theme="ch5"]  [data-theme="ch5"] { opacity: 1; }
+
+/* ---------- Hình vẽ tay ở hai bên lề (laptop / màn hình rộng) ---------- */
+
+/* Nội dung rộng tối đa 1024px: từ 1260px mỗi bên lề còn ≥118px, đủ chỗ cho hình vẽ mà không chạm chữ. */
+@media (min-width: 1260px) {
+  .decor__doodles { display: block; }
+}
+
+.decor__doodle { position: absolute; display: block; }
+.decor__doodle-svg { width: 100%; height: 100%; display: block; }
+.decor__doodle--warm { color: rgba(156, 79, 45, 0.4); }
+.decor__doodle--mist { color: rgba(63, 102, 118, 0.4); }
+.decor__doodle .icon-lit { fill: rgba(236, 191, 95, 0.6); }
+
+/* ---------- Băng dính washi trên ảnh polaroid ---------- */
+
+.polaroid { position: relative; }
+.photo-stage .polaroid { position: absolute; }
+.polaroid::before {
+  content: "";
+  position: absolute;
+  top: -9px;
+  left: 50%;
+  width: 34%;
+  max-width: 64px;
+  height: 18px;
+  transform: translateX(-50%) rotate(-3deg);
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.35) 0 4px, transparent 4px 8px),
+    rgba(231, 165, 131, 0.62);
+  box-shadow: 0 1px 2px rgba(60, 40, 20, 0.12);
+  pointer-events: none;
+}
+.polaroid:nth-child(even)::before {
+  transform: translateX(-50%) rotate(4deg);
+  background:
+    repeating-linear-gradient(45deg, rgba(255, 255, 255, 0.35) 0 4px, transparent 4px 8px),
+    rgba(157, 191, 207, 0.7);
+}
+
+/* Bảng debug luôn ở trên trang trí */
+.debug { z-index: 50; }

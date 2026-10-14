@@ -17,6 +17,25 @@ window.NNBT = window.NNBT || {};
 
   const title = 'Những ngày bình thường của chúng mình';
 
+  // ---------- Ảnh thật (assets/photos/) ----------
+  // Ghép ảnh theo xác nhận của anh. Ảnh đã nén và xóa metadata (EXIF/GPS).
+  const photo = (file, w, h, alt) => ({ src: 'assets/photos/' + file, w, h, alt });
+  const PHOTOS = {
+    start:      photo('start-photobooth.jpg', 537, 562, 'Ảnh: dải ảnh photobooth của hai người.'),
+    volunteer:  photo('ch1-tinh-nguyen-da-lat.jpg', 563, 790, 'Ảnh: anh cúi xuống bên các em nhỏ trong chuyến đi tình nguyện ở Đà Lạt.'),
+    dalatRoad:  photo('ch1-con-duong-da-lat.jpg', 532, 765, 'Ảnh: con đường buổi tối ở Đà Lạt mà hai người từng đi cùng nhau.'),
+    meal1:      photo('ch2-bua-com-1.jpg', 545, 800, 'Ảnh: một bữa cơm anh nấu cho vợ.'),
+    meal2:      photo('ch2-bua-com-2.jpg', 559, 782, 'Ảnh: một bữa cơm anh nấu cho vợ.'),
+    meal3:      photo('ch2-bua-com-3.jpg', 539, 779, 'Ảnh: một bữa cơm anh nấu cho vợ.'),
+    cheek:      photo('ch3-ap-ma.jpg', 554, 790, 'Ảnh: hai người áp má vào nhau.'),
+    reunion:    photo('ch4-qua-gap-lai.jpg', 573, 693, 'Ảnh: bó hoa và những món quà anh tặng vợ khi hai người gặp lại nhau lần đầu trong thời gian yêu xa.'),
+    kimono:     photo('ch4-nhat-kimono.jpg', 495, 501, 'Ảnh: hai người mặc kimono trong chuyến đi Nhật Bản.'),
+    busStop:    photo('ch4-nhat-tram-xe-buyt.jpg', 531, 765, 'Ảnh: vợ ngồi ở trạm xe buýt trong chuyến đi Nhật Bản.'),
+    feet:       photo('ch4-hai-doi-chan.jpg', 557, 710, 'Ảnh: hai đôi chân đứng cạnh nhau.'),
+    flowers:    photo('ch5-vo-tuong-hoa.jpg', 505, 792, 'Ảnh: vợ đứng trước bức tường hoa.'),
+    river:      photo('ch5-vo-ben-song.jpg', 534, 727, 'Ảnh: chân dung vợ bên bờ sông.')
+  };
+
   // step:   bước triển khai dự kiến (chỉ dùng cho ghi chú trong khung tạm).
   // ready:  true = nội dung chương đã sẵn sàng để chơi. KHÔNG tự mở khóa chương.
   //         Chương chỉ được mở khi nó là "Chặng tiếp theo" trên bản đồ VÀ người chơi chủ động chạm vào
@@ -169,6 +188,7 @@ window.NNBT = window.NNBT || {};
           id: 'intro',
           scene: 'road',
           approved: true,
+          photos: [PHOTOS.volunteer],
           alt: 'Tranh màu nước: con phố Đà Lạt ướt mưa, đồi thông mờ sương phía xa, một cột đèn vàng.',
           text: [
             'Em còn nhớ chuyến đi tình nguyện ở Đà Lạt của chúng mình không?',
@@ -200,6 +220,7 @@ window.NNBT = window.NNBT || {};
         {
           id: 'reflection',
           scene: 'quiet',
+          photos: [PHOTOS.dalatRoad],
           approved: true,   // ĐÃ DUYỆT — đoạn suy ngẫm cuối chương
           alt: 'Tranh màu nước: con phố Đà Lạt vắng trong mưa nhẹ, đèn đường vàng dịu.',
           text: [
@@ -267,6 +288,7 @@ window.NNBT = window.NNBT || {};
         {
           id: 'apart',
           scene: 'apart',
+          photos: [PHOTOS.meal1, PHOTOS.meal2, PHOTOS.meal3],
           alt: 'Tranh màu nước: lại những vật quen thuộc trên bàn — hai chiếc laptop, mũ bảo hiểm, hai chiếc ly — dưới ánh sáng xanh dịu.',
           // ĐÃ CHỐT — lời kể chính thức của nhịp cuối.
           text: [
@@ -325,6 +347,7 @@ window.NNBT = window.NNBT || {};
         {
           id: 'child',
           scene: 'child',
+          photos: [PHOTOS.cheek],
           alt: 'Tranh màu nước: hai người ngồi sát cạnh nhau trên chiếc sofa dưới ánh đèn ấm, nhìn từ phía sau.',
           text: [
             'Những lúc ấy, anh thấy mình được cưng chiều như một đứa trẻ.',
@@ -362,11 +385,22 @@ window.NNBT = window.NNBT || {};
           hint: { text: 'Chạm vào điểm sáng nhé.' }
         },
         {
+          // Tách từ nhịp "graduation" (giữ nguyên chữ) để đi kèm ảnh quà lần đầu gặp lại khi yêu xa.
+          id: 'reunion',
+          scene: 'homes',
+          photos: [PHOTOS.reunion],
+          alt: 'Tranh màu nước: bản đồ với hai ngôi nhà sáng đèn.',
+          text: [
+            'Giữa những ngày xa nhau, vẫn có những lần mình gặp lại.'
+          ],
+          hotspot: { x: 88, y: 86, label: 'Điểm sáng: kỷ niệm tiếp theo', icon: 'spark' },
+          hint: { text: 'Chạm vào điểm sáng nhé.' }
+        },
+        {
           id: 'graduation',
           scene: 'graduation',
           alt: 'Tranh màu nước: trên bản đồ, con tem đầu tiên sáng lên với hình chiếc mũ tốt nghiệp.',
           text: [
-            'Giữa những ngày xa nhau, vẫn có những lần mình gặp lại.',
             'Có chuyến trở về dự lễ tốt nghiệp của vợ.'
           ],
           hotspot: { x: 70.5, y: 87, label: 'Điểm sáng: kỷ niệm tiếp theo', icon: 'spark' },
@@ -385,6 +419,7 @@ window.NNBT = window.NNBT || {};
         {
           id: 'japan',
           scene: 'japan',
+          photos: [PHOTOS.kimono, PHOTOS.busStop],
           alt: 'Tranh màu nước: con tem thứ ba sáng lên với hình núi Phú Sĩ; trên bản đồ, Nhật Bản sáng nhẹ.',
           text: [
             'Và có chuyến đi Nhật Bản của hai đứa mình.'
@@ -411,6 +446,7 @@ window.NNBT = window.NNBT || {};
         {
           id: 'future',
           scene: 'future',
+          photos: [PHOTOS.feet],
           approved: true,   // ĐÃ CHỐT — câu cốt lõi của Chương 4, giữ nguyên văn
           alt: 'Tranh màu nước: từ hai ngôi nhà, hai con đường vàng nhập làm một, hướng về phía ánh bình minh.',
           text: [
@@ -529,6 +565,7 @@ window.NNBT = window.NNBT || {};
     letter: Object.freeze(letter),
     chapterContent,
     finale,
+    photos: PHOTOS,
     ui,
     getChapter,
     chapterIds,

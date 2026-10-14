@@ -414,7 +414,12 @@
           const A = F.endActions;
           root.append(el('div', { class: 'page finale__page finale__end' }, [
             replaying ? el('p', { class: 'badge', text: story.ui.chapter.replayBadge }) : null,
-            el('figure', { class: 'finale__end-art', 'aria-hidden': 'true', html: NNBT.icons.icon('aurora', 'finale__end-svg') }),
+            (story.photos && NNBT.photos)
+              ? el('div', { class: 'finale__photos' }, [
+                  NNBT.photos.polaroid(story.photos.flowers, { rotate: -4, zoom: true }),
+                  NNBT.photos.polaroid(story.photos.river, { rotate: 3, zoom: true })
+                ])
+              : el('figure', { class: 'finale__end-art', 'aria-hidden': 'true', html: NNBT.icons.icon('aurora', 'finale__end-svg') }),
             el('h1', { class: 'finale__ending', text: F.ending }),
             el('div', { class: 'actions finale__end-actions' }, [
               button({ label: A.postcard.text, variant: 'secondary', onClick: () => guard() && show(2) }),

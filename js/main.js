@@ -68,6 +68,7 @@
 
   function boot() {
     engine.init(document.getElementById('stage'));
+    if (NNBT.decor) NNBT.decor.init(); // trang trí nền, đổi theo chương
     setupSoundToggle();
     setupHomeButton();
     setupDebugPanel();

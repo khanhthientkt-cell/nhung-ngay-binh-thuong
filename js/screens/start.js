@@ -33,6 +33,18 @@
 
       const started = state.progress.started;
 
+      // Bìa: ảnh thật của hai người (polaroid) đặt trên các mảng màu nước; không có ảnh thì dùng tranh.
+      function coverArt() {
+        const p = ctx.story.photos && ctx.story.photos.start;
+        if (!p || !NNBT.photos) return el('figure', { class: 'cover__art', html: COVER_ART });
+        const fig = el('div', { class: 'cover__art cover__art--photo', html: COVER_ART });
+        const svg = fig.querySelector('svg');
+        svg.setAttribute('aria-hidden', 'true');
+        svg.removeAttribute('role');
+        fig.append(NNBT.photos.polaroid(p, { rotate: -3, lazy: false, zoom: true }));
+        return fig;
+      }
+
       const primary = button({
         label: started ? t.start.resume : t.start.begin,
         variant: 'primary',
@@ -75,7 +87,7 @@
 
       node.append(
         el('article', { class: 'page page--cover' }, [
-          el('figure', { class: 'cover__art', html: COVER_ART }),
+          coverArt(),
           el('div', { class: 'cover__text' }, [
             el('p', { class: 'eyebrow', text: t.dedication }),
             el('h1', { class: 'cover__title', text: ctx.story.title }),
