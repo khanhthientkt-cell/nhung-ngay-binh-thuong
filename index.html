@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f4ecdc">
+  <!-- Món quà riêng tư: không cho công cụ tìm kiếm lập chỉ mục. -->
+  <meta name="robots" content="noindex, nofollow">
+  <title>Những ngày bình thường của chúng mình</title>
+  <!-- Biểu tượng tab: trái tim màu đất trên nền giấy (nhúng sẵn, không cần tệp riêng) -->
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f4ecdc'/%3E%3Cpath d='M32 50C18 40 12 32 12 24a10 10 0 0 1 20-3 10 10 0 0 1 20 3c0 8-6 16-20 26z' fill='%239c4f2d'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="css/fonts.css">
+  <link rel="stylesheet" href="css/base.css">
+  <link rel="stylesheet" href="css/scenes.css">
+  <link rel="stylesheet" href="css/letter.css">
+  <link rel="stylesheet" href="css/map.css">
+  <link rel="stylesheet" href="css/chapter.css">
+  <link rel="stylesheet" href="css/finale.css">
+</head>
+<body>
+  <a class="skip-link" href="#stage">Bỏ qua, đến nội dung chính</a>
+
+  <!--
+    Bộ lọc SVG dùng chung cho minh họa màu nước.
+    Không dùng display:none vì một số trình duyệt sẽ bỏ qua filter nằm trong phần tử bị ẩn.
+  -->
+  <svg class="svg-defs" width="0" height="0" aria-hidden="true" focusable="false">
+    <defs>
+      <!-- Mảng màu loang: viền gợn + hạt giấy -->
+      <filter id="wc-wash" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.014" numOctaves="4" seed="4" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="18" xChannelSelector="R" yChannelSelector="G" result="displaced"/>
+        <feGaussianBlur in="displaced" stdDeviation="2" result="soft"/>
+        <feTurbulence type="fractalNoise" baseFrequency="0.7" numOctaves="2" seed="9" result="grain"/>
+        <feColorMatrix in="grain" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -0.9 1.15" result="grainAlpha"/>
+        <feComposite in="soft" in2="grainAlpha" operator="in"/>
+      </filter>
+      <!-- Nét cọ mảnh: chỉ làm gợn nhẹ đường viền -->
+      <filter id="wc-line" x="-10%" y="-10%" width="120%" height="120%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.05" numOctaves="2" seed="2" result="noise"/>
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="4" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+    </defs>
+  </svg>
+
+  <header class="topbar" role="banner">
+    <button type="button" class="topbar__btn" id="btn-home" hidden>
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 11.5 12 5l8 6.5M6.5 10v9h11v-9" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+      <span>Trang đầu</span>
+    </button>
+    <button type="button" class="topbar__btn topbar__btn--end" id="btn-sound" aria-pressed="false">
+      <svg class="icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4 9.5h3.5L12 6v12l-4.5-3.5H4z" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+        <path class="icon-sound-on" d="M15.5 9.5a3.5 3.5 0 0 1 0 5M17.8 7.2a6.8 6.8 0 0 1 0 9.6" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+        <path class="icon-sound-off" d="m15.5 9.5 5 5m0-5-5 5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+      </svg>
+      <span id="sound-label">Âm thanh: tắt</span>
+    </button>
+  </header>
+
+  <main id="stage" class="stage" tabindex="-1"></main>
+
+  <!-- Vùng thông báo cho trình đọc màn hình và thông báo nhỏ trên màn hình -->
+  <div id="announcer" class="sr-only" aria-live="polite" aria-atomic="true"></div>
+  <div id="toast-region" class="toast-region" role="status" aria-live="polite"></div>
+
+  <noscript>
+    <p class="noscript">Câu chuyện này cần bật JavaScript để mở. Vợ thử mở bằng Chrome hoặc Safari nhé.</p>
+  </noscript>
+
+  <!-- Thứ tự tải quan trọng: nội dung → trạng thái → giao diện → điều hướng → các màn hình → khởi động -->
+  <script src="js/content/story.js"></script>
+  <script src="js/state.js"></script>
+  <script src="js/components/ui.js"></script>
+  <script src="js/components/icons.js"></script>
+  <script src="js/components/postcard.js"></script>
+  <script src="js/engine.js"></script>
+  <script src="js/art/ch1-rain.js"></script>
+  <script src="js/art/ch2-days.js"></script>
+  <script src="js/art/ch3-home.js"></script>
+  <script src="js/art/ch4-two-places.js"></script>
+  <script src="js/screens/start.js"></script>
+  <script src="js/screens/letter.js"></script>
+  <script src="js/screens/map.js"></script>
+  <script src="js/screens/chapter.js"></script>
+  <script src="js/screens/finale.js"></script>
+  <script src="js/screens/memories.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>

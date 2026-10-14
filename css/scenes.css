@@ -1,0 +1,228 @@
+/*
+ * scenes.css — Bố cục màn hình, trang truyện, chuyển cảnh và các màn hình của Bước 1.
+ * Các chương sau sẽ thêm khối riêng vào cuối tệp (hoặc tách tệp nếu dài).
+ */
+
+/* ---------- Sân khấu & chuyển cảnh ---------- */
+
+.stage {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  outline: none;
+}
+
+.screen {
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  justify-content: center;
+  padding:
+    calc(var(--topbar-h) + env(safe-area-inset-top, 0px) + 12px)
+    max(var(--gutter), env(safe-area-inset-right, 0px))
+    calc(32px + env(safe-area-inset-bottom, 0px))
+    max(var(--gutter), env(safe-area-inset-left, 0px));
+  opacity: 1;
+  transform: none;
+  transition: opacity var(--dur-screen) var(--ease), transform var(--dur-screen) var(--ease);
+}
+/* Căn giữa theo chiều dọc khi nội dung ngắn; khi nội dung dài hơn màn hình thì bắt đầu từ trên
+   (align-items:center sẽ đẩy phần tràn lên trên, không cuộn tới được). */
+.screen > * { margin-block: auto; }
+
+.screen.is-entering { opacity: 0; transform: translateY(10px); }
+.screen.is-leaving  { opacity: 0; transform: translateY(-6px); }
+
+/* ---------- Trang giấy ---------- */
+
+.page {
+  position: relative;
+  width: 100%;
+  max-width: 44rem;
+  padding: clamp(1.5rem, 1rem + 3vw, 3rem);
+  background: rgba(251, 246, 236, 0.88);
+  border-radius: var(--radius-page);
+  box-shadow: var(--shadow-page);
+}
+
+/* Viền mép giấy mảnh, hơi lệch cho cảm giác thủ công */
+.page::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(138, 119, 104, 0.22);
+  border-radius: 4px 8px 6px 10px;
+  pointer-events: none;
+}
+
+.page--reading > * { max-width: var(--measure); }
+
+.page__title { font-size: var(--text-heading); }
+.page__lede { color: var(--ink-soft); }
+
+.eyebrow {
+  margin: 0 0 0.4rem;
+  font-size: var(--text-small);
+  letter-spacing: 0.06em;
+  color: var(--ink-soft);
+}
+
+.badge {
+  display: inline-block;
+  margin: 0 0 1rem;
+  padding: 0.15rem 0.75rem;
+  border: 1px solid rgba(95, 135, 152, 0.6);
+  border-radius: 999px;
+  font-size: var(--text-small);
+  color: #3f6676;
+  background: rgba(157, 191, 207, 0.18);
+}
+
+.placeholder-note {
+  padding: 0.85rem 1rem;
+  border: 1.5px dashed rgba(100, 84, 74, 0.35);
+  border-radius: 8px;
+  color: var(--ink-soft);
+  font-size: var(--text-small);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 1.75rem;
+}
+.actions--stack { flex-direction: column; align-items: stretch; }
+
+/* ---------- Màn hình khởi động ---------- */
+
+.page--cover {
+  display: grid;
+  gap: 1.25rem;
+  text-align: center;
+  max-width: 30rem;
+}
+
+.cover__art {
+  margin: 0 auto;
+  width: min(100%, 300px);
+}
+.cover__art svg { width: 100%; height: auto; overflow: visible; }
+.cover__art circle { mix-blend-mode: multiply; }
+
+.cover__title {
+  font-size: var(--text-title);
+  margin-bottom: 0.4rem;
+}
+
+.cover__tagline { color: var(--ink-soft); }
+
+.page--cover .actions--stack { max-width: 20rem; margin-inline: auto; }
+
+/* Máy tính: bố cục hai cột như hai trang sách mở */
+@media (min-width: 820px) {
+  .page--cover {
+    max-width: 56rem;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    gap: 2.5rem;
+    text-align: left;
+    padding: 3.5rem;
+  }
+  .page--cover::before {
+    /* nếp gấp giữa hai trang */
+    content: "";
+    position: absolute;
+    top: 8px; bottom: 8px; left: 50%;
+    width: 1px;
+    background: linear-gradient(to bottom, transparent, rgba(138, 119, 104, 0.25), transparent);
+  }
+  .cover__art { width: 100%; max-width: 360px; }
+  .page--cover .actions--stack { margin-inline: 0; }
+}
+
+/* ---------- Xem lại kỷ niệm ---------- */
+
+.memory-list {
+  list-style: none;
+  margin: 1.25rem 0 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.memory__link,
+.memory__locked {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  grid-template-areas: "label status" "title status";
+  align-items: center;
+  column-gap: 12px;
+  width: 100%;
+  min-height: 56px;
+  padding: 0.75rem 1rem;
+  border-radius: 10px;
+  text-align: left;
+}
+
+.memory__link {
+  border: 1.5px solid rgba(100, 84, 74, 0.35);
+  background: rgba(251, 246, 236, 0.75);
+  cursor: pointer;
+  transition: background-color var(--dur-quick) var(--ease), border-color var(--dur-quick) var(--ease);
+}
+.memory__link:hover { background: #fffaf1; border-color: var(--warm); }
+
+.memory__locked { border: 1.5px dashed rgba(100, 84, 74, 0.3); }
+
+.memory__label  { grid-area: label; font-size: var(--text-small); color: var(--ink-soft); }
+.memory__title  { grid-area: title; font-family: var(--font-display); font-size: 1.15rem; line-height: 1.35; }
+.memory__status { grid-area: status; font-size: var(--text-small); color: var(--ink-soft); white-space: nowrap; }
+.is-locked .memory__title { color: var(--ink-soft); }
+
+/* ---------- Bảng debug (chỉ hiện với #debug) ---------- */
+
+/* Câu chữ chờ duyệt */
+.is-debug [data-draft="true"] {
+  outline: 1.5px dashed #b4552f;
+  outline-offset: 3px;
+}
+.is-debug [data-draft="true"]::before {
+  content: "NHÁP – cần duyệt";
+  display: block;
+  margin-bottom: 2px;
+  font: 600 11px/1.4 var(--font-body);
+  letter-spacing: 0.04em;
+  color: #9c4f2d;
+}
+.is-debug .story-hint[data-draft="true"]::before { content: "NHÁP – cần duyệt"; }
+
+/* Phương án lời kể thay thế (chỉ có ở chế độ debug) */
+.story-alt {
+  margin-top: 1.25rem;
+  padding: 0.75rem 1rem;
+  border-radius: 8px;
+  background: rgba(157, 191, 207, 0.16);
+  font-size: var(--text-small);
+  color: var(--ink-soft);
+}
+.story-alt__label { margin: 0 0 0.25rem; font-weight: 500; color: #3f6676; }
+.story-alt__p { margin: 0; }
+
+.debug {
+  position: fixed;
+  left: 8px;
+  bottom: 8px;
+  z-index: 50;
+  max-width: min(92vw, 360px);
+  max-height: 45vh;
+  overflow: auto;
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: rgba(30, 24, 20, 0.88);
+  color: #f4ecdc;
+  font: 12px/1.45 ui-monospace, Consolas, monospace;
+}
+.debug summary { cursor: pointer; }
+.debug__meta { margin: 6px 0; opacity: 0.8; }
+.debug__state { margin: 0; white-space: pre-wrap; }

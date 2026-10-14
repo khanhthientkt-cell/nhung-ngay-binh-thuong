@@ -1,0 +1,166 @@
+/*
+ * map.css — Bản đồ hành trình.
+ * Khung bản đồ giữ đúng tỉ lệ với viewBox của SVG nền (dọc 3:5, ngang 16:9) nên hình không bị méo.
+ * Điểm dừng là nút HTML đặt tuyệt đối theo %, nằm trên lớp SVG.
+ */
+
+.map-screen {
+  width: 100%;
+  max-width: 64rem;
+}
+
+.map-screen__head { max-width: var(--measure); margin-bottom: 1rem; }
+.map-screen__head .page__lede { margin: 0; }
+
+.map {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1 / 2;
+  border-radius: var(--radius-page);
+  background: rgba(251, 246, 236, 0.9);
+  box-shadow: var(--shadow-page);
+  /* Không dùng overflow:hidden để nhãn và viền focus ở mép không bị cắt. */
+}
+.map[data-layout="wide"] { aspect-ratio: 16 / 9; }
+
+.map::after {
+  content: "";
+  position: absolute;
+  inset: 8px;
+  border: 1px solid rgba(138, 119, 104, 0.22);
+  border-radius: 4px 8px 6px 10px;
+  pointer-events: none;
+}
+
+.map__terrain {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  border-radius: inherit;
+}
+
+/* Con đường */
+.map__path { vector-effect: non-scaling-stroke; }
+.map__path--walked { stroke: var(--warm); stroke-width: 3.5; opacity: 0.85; }
+.map__path--next   { stroke: var(--warm); stroke-width: 3; stroke-dasharray: 2 9; opacity: 0.8; }
+.map__path--future { stroke: var(--ink-faint); stroke-width: 2; stroke-dasharray: 2 10; opacity: 0.55; }
+
+/* ---------- Điểm dừng ---------- */
+
+.map__stops { list-style: none; margin: 0; padding: 0; }
+
+.stop {
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.stop__btn {
+  --marker: 52px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: max-content;
+  padding: 0;
+  border: none;
+  background: none;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+/* Nhãn bên phải điểm (điểm nằm sát mép trái) */
+.stop--right .stop__btn {
+  flex-direction: row;
+  text-align: left;
+  max-width: min(66vw, 17rem);
+  transform: translate(calc(var(--marker) / -2), -50%);
+}
+/* Nhãn bên trái điểm (điểm nằm sát mép phải) */
+.stop--left .stop__btn {
+  flex-direction: row-reverse;
+  text-align: right;
+  max-width: min(66vw, 17rem);
+  transform: translate(calc(-100% + var(--marker) / 2), -50%);
+}
+/* Nhãn bên dưới điểm (bản đồ ngang) */
+.stop--below .stop__btn {
+  flex-direction: column;
+  text-align: center;
+  max-width: 11rem;
+  transform: translate(-50%, calc(var(--marker) / -2));
+}
+
+.stop__marker { flex: none; }
+
+.stop__marker {
+  display: grid;
+  place-items: center;
+  width: var(--marker);
+  height: var(--marker);
+  border-radius: 50%;
+  background: var(--paper-light);
+  border: 2px solid var(--warm);
+  color: var(--warm-deep);
+  box-shadow: 0 6px 14px -8px rgba(90, 64, 40, 0.6);
+  transition: transform var(--dur-quick) var(--ease), box-shadow var(--dur-quick) var(--ease);
+}
+.stop__icon { width: 26px; height: 26px; }
+.stop__icon .icon-lit { fill: var(--wash-dawn); }
+
+.stop__text {
+  display: grid;
+  gap: 1px;
+  padding: 4px 8px;
+  border-radius: 8px;
+  background: rgba(251, 246, 236, 0.86);
+  line-height: 1.3;
+}
+.stop__label  { font-size: 0.8125rem; color: var(--ink-soft); }
+.stop__title  { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); text-wrap: balance; }
+.stop__place  { font-size: 0.8125rem; color: #3f6676; }
+.stop__status { font-size: 0.8125rem; font-weight: 500; color: var(--ink-soft); }
+
+.stop__btn:hover .stop__marker { transform: translateY(-2px); box-shadow: 0 10px 18px -10px rgba(90, 64, 40, 0.7); }
+.stop__btn:focus-visible { outline: none; }
+.stop__btn:focus-visible .stop__marker { outline: 3px solid var(--focus); outline-offset: 3px; }
+.stop__btn:focus-visible .stop__text { outline: 2px solid var(--focus); outline-offset: 1px; }
+
+/* Đã đi qua: nền ấm đầy */
+.stop--visited .stop__marker { background: var(--warm-deep); border-color: var(--warm-deep); color: #fff8ef; }
+.stop--visited .stop__icon .icon-lit { fill: #fff8ef; }
+
+/* Chặng tiếp theo: viền ấm, vầng sáng nhẹ (tắt khi giảm chuyển động) */
+.stop--next .stop__marker {
+  border-width: 2.5px;
+  animation: stop-glow 2.8s ease-in-out infinite;
+}
+.stop--next .stop__status { color: var(--warm-deep); }
+
+@keyframes stop-glow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(201, 119, 79, 0.0), 0 6px 14px -8px rgba(90, 64, 40, 0.6); }
+  50%      { box-shadow: 0 0 0 8px rgba(201, 119, 79, 0.18), 0 6px 14px -8px rgba(90, 64, 40, 0.6); }
+}
+
+/* Chưa mở: viền chấm gạch, biểu tượng nhạt — luôn kèm chữ "Chưa mở" */
+.stop--locked .stop__marker {
+  border: 2px dashed rgba(100, 84, 74, 0.5);
+  color: var(--ink-soft);
+  background: rgba(251, 246, 236, 0.92);
+  box-shadow: none;
+}
+.stop--locked .stop__icon { opacity: 0.7; }
+.stop--locked .stop__title { color: var(--ink-soft); }
+
+/* ---------- Máy tính ---------- */
+
+@media (min-width: 760px) {
+  .stop__btn { --marker: 58px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .stop--next .stop__marker { animation: none; box-shadow: 0 0 0 6px rgba(201, 119, 79, 0.18); }
+}
