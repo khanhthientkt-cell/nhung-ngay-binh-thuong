@@ -58,6 +58,24 @@
   .art-float { animation: none; }
 }
 
+/* Gợn nước lan trên mặt đường (Chương 1) */
+.art-ripple {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: art-ripple 2.6s ease-out infinite;
+}
+.art-ripple--1 { animation-delay: -0.9s; }
+.art-ripple--2 { animation-delay: -1.7s; }
+
+@keyframes art-ripple {
+  0%   { transform: scale(0.35); opacity: 0.95; }
+  100% { transform: scale(1.5); opacity: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .art-ripple { animation: none; opacity: 0.5; }
+}
+
 /* ---------- Vật có thể chạm trong tranh ---------- */
 
 .hotspot {

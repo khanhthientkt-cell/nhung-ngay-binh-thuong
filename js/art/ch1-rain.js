@@ -4,73 +4,21 @@
  * Một SVG duy nhất: nền (đồi thông mờ sương, phố ướt, cột đèn) dùng chung, các lớp [data-layer]
  * được bật/tắt theo nhịp truyện (xem js/screens/chapter.js). Mưa là lớp hoa văn trượt dọc bằng CSS.
  *
- * CHỈ minh họa những gì đã được kể (bản duyệt sau Bước 3A):
- *   - em, chị Liên và anh Tâm đi dưới mưa (nhìn từ phía sau, dáng đi bình thường, không thêm ô hay động tác);
- *   - anh quay lại lấy ô rồi chạy trở ra (anh cầm ô chạy về phía mọi người).
+ * TRANH TĨNH VẬT — không vẽ người (theo lựa chọn của anh). CHỈ minh họa những gì đã được kể:
+ *   - em, chị Liên và anh Tâm đi dưới mưa → ba hàng dấu chân gợn nước trên mặt đường ướt;
+ *   - anh quay lại lấy ô rồi chạy trở ra → chiếc ô của anh lướt qua màn mưa về phía mọi người.
  * KHÔNG vẽ: ngôi nhà / mái hiên, ô của em và chị Liên, cảnh che ô chung.
- * Nhân vật giản dị, không vẽ khuôn mặt.
  *
  * Lớp:
  *   road   — con phố mưa, chưa có ai (lời dẫn mở đầu)
- *   walk   — ba người đi dưới mưa; anh đứng ở bên trái nhìn theo
- *   return — anh cầm ô chạy ra về phía mọi người
+ *   walk   — ba hàng dấu chân trên mặt đường ướt
+ *   return — chiếc ô mở lướt về phía những hàng dấu chân
  *   quiet  — con phố vắng, mưa nhẹ (đoạn suy ngẫm cuối)
  */
 window.NNBT = window.NNBT || {};
 
 (function (NNBT) {
   'use strict';
-
-  const INK = '#3c3a39';
-
-  // Một người, gốc tọa độ ở chân (0,0), cao ~75 đơn vị. Nhìn nghiêng hoặc từ phía sau, không có mặt.
-  function person(o) {
-    const coat = o.coat;
-    const dark = o.dark || coat;
-    const hair = o.hair || '#2f2a28';
-    const stroke = 'fill="none" stroke-linecap="round" stroke-linejoin="round"';
-    let s = '';
-
-    // Chân
-    if (o.pose === 'run') {
-      s += '<path d="M-2 -28 L-12 -5 M3 -28 L9 -13 L14 -10" stroke="' + INK + '" stroke-width="3.2" ' + stroke + '/>';
-      s += '<path d="M-17 -1 q-4 -5 -8 -1 M18 -6 q4 -5 8 -1" stroke="#e4ecee" stroke-width="1.3" ' + stroke + '/>';
-    } else if (o.pose === 'stand') {
-      s += '<path d="M-3 -28 L-3.5 0 M3 -28 L3.5 0" stroke="' + INK + '" stroke-width="3.2" ' + stroke + '/>';
-    } else {
-      s += '<path d="M-3 -28 L-7 0 M3 -28 L6 -1" stroke="' + INK + '" stroke-width="3.2" ' + stroke + '/>';
-    }
-
-    // Áo khoác
-    s += '<path d="M-8 -58 Q-11 -42 -10.5 -26 L10.5 -26 Q11 -42 8 -58 Q0 -62 -8 -58Z" fill="' + coat + '"/>';
-
-    // Tay
-    if (o.umbrella) {
-      s += '<path d="M-7 -55 L-12 -42 M7 -55 Q11 -50 5 -48" stroke="' + dark + '" stroke-width="3.2" ' + stroke + '/>';
-    } else {
-      s += '<path d="M-7 -55 L-9 -38 M7 -55 L9 -38" stroke="' + dark + '" stroke-width="3.2" ' + stroke + '/>';
-    }
-
-    // Đầu và tóc
-    s += '<circle cx="0" cy="-66" r="6.5" fill="' + hair + '"/>';
-    if (o.hairStyle === 'long') s += '<path d="M-6.5 -67 Q-8 -55 -4.5 -50 L4.5 -50 Q8 -55 6.5 -67Z" fill="' + hair + '"/>';
-    if (o.hairStyle === 'tied') s += '<circle cx="-7" cy="-68" r="3" fill="' + hair + '"/>';
-
-    // Ô (chỉ có ở nhân vật anh, sau khi quay lại lấy ô)
-    if (o.umbrella) {
-      const cx = 5;
-      s += '<path d="M5 -48 L' + cx + ' -91" stroke="#4a3f38" stroke-width="1.4" fill="none"/>';
-      s += '<path d="M' + (cx - 25) + ' -88 Q' + cx + ' -117 ' + (cx + 25) + ' -88' +
-        ' Q' + (cx + 19) + ' -91.5 ' + (cx + 12.5) + ' -88 Q' + (cx + 6) + ' -91.5 ' + cx + ' -88' +
-        ' Q' + (cx - 6) + ' -91.5 ' + (cx - 12.5) + ' -88 Q' + (cx - 19) + ' -91.5 ' + (cx - 25) + ' -88Z"' +
-        ' fill="' + o.umbrella + '" opacity="0.94" filter="url(#wc-line)"/>';
-      s += '<path d="M' + cx + ' -103 L' + cx + ' -88 M' + (cx - 12) + ' -98 L' + (cx - 12.5) + ' -88 M' + (cx + 12) + ' -98 L' + (cx + 12.5) + ' -88"' +
-        ' stroke="rgba(255,255,255,0.25)" stroke-width="0.8" fill="none"/>';
-    }
-
-    const tf = 'translate(' + o.x + ' ' + o.y + ')' + (o.lean ? ' rotate(' + o.lean + ')' : '') + ' scale(' + (o.s || 1) + ')';
-    return '<g transform="' + tf + '">' + s + '</g>';
-  }
 
   function pines(baseY, from, to, step, minH, maxH, fill, opacity, seed) {
     let out = '';
@@ -84,14 +32,78 @@ window.NNBT = window.NNBT || {};
     return '<g fill="' + fill + '" opacity="' + opacity + '">' + out + '</g>';
   }
 
-  // Nhân vật
-  const ANH = { coat: '#4f5d6e', dark: '#3e4a58', hair: '#26221f' };
-  const EM = { coat: '#c4876a', dark: '#a56d54', hairStyle: 'long' };
-  const LIEN = { coat: '#8a9a84', dark: '#6e7d69', hairStyle: 'tied' };
-  const TAM = { coat: '#7b8796', dark: '#616c7a' };
   const ANH_UMBRELLA = '#4f6f7f';
 
-  function a(base, extra) { return Object.assign({}, base, extra); }
+  // Ba hàng dấu chân trên mặt đường ướt, nhỏ dần về phía xa, gợn nước lan ở những bước mới nhất.
+  function footprints() {
+    let s = '<g fill="#3c464c">';
+    const trails = [[34, 296, 318, 252], [30, 284, 300, 247], [44, 274, 284, 243]];
+    const rings = [];
+    trails.forEach(([x0, y0, x1, y1], t) => {
+      const n = 9;
+      for (let i = 0; i < n; i++) {
+        const k = i / (n - 1);
+        const sc = 1 - k * 0.55;
+        const side = (i % 2 ? 1 : -1) * 2.6 * sc;
+        const x = x0 + (x1 - x0) * k;
+        const y = y0 + (y1 - y0) * k + side;
+        s += '<ellipse cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="' + (5.2 * sc).toFixed(2) + '" ry="' + (2.1 * sc).toFixed(2) +
+          '" transform="rotate(-8 ' + x.toFixed(1) + ' ' + y.toFixed(1) + ')" opacity="' + (0.62 - k * 0.3).toFixed(2) + '"/>';
+        if (i >= n - 2) rings.push([x, y, sc, t]);
+      }
+    });
+    s += '</g>';
+    // Gợn nước lan (chuyển động nhẹ; tắt khi giảm chuyển động)
+    s += '<g fill="none" stroke="#e6eef0" stroke-width="0.9">';
+    rings.forEach(([x, y, sc, t], i) => {
+      s += '<ellipse class="art-ripple art-ripple--' + (i % 3) + '" cx="' + x.toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="' + (9 * sc).toFixed(1) + '" ry="' + (2.6 * sc).toFixed(1) + '"/>';
+    });
+    s += '</g>';
+    // Vệt phản chiếu đèn đường kéo dài trên mặt nước
+    s += '<g stroke="#ffe0a0" stroke-width="1.4" stroke-linecap="round" opacity="0.35"><path d="M352 250 h18 M346 258 h26 M350 266 h20 M344 276 h30"/></g>';
+    return s;
+  }
+
+  // Chiếc ô mở, vẽ chi tiết: các múi vải xen màu, gân, bóng sáng, chóp, cán cong.
+  function umbrella(cx, cy, r, tilt, color) {
+    const id = 'c1-ucap-' + Math.round(cx);
+    const dome = 'M' + (-r) + ' 0 C ' + (-r) + ' ' + (-0.78 * r) + ' ' + (-0.55 * r) + ' ' + (-0.98 * r) + ' 0 ' + (-0.99 * r) +
+      ' C ' + (0.55 * r) + ' ' + (-0.98 * r) + ' ' + r + ' ' + (-0.78 * r) + ' ' + r + ' 0 Z';
+    let s = '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + tilt + ')">';
+    s += '<defs><clipPath id="' + id + '"><path d="' + dome + '"/></clipPath>' +
+      '<linearGradient id="' + id + '-g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6f8f9f"/><stop offset="0.55" stop-color="' + color + '"/><stop offset="1" stop-color="#344c58"/></linearGradient></defs>';
+    // cán (phần dưới vòm) và tay cầm cong
+    s += '<path d="M0 -6 V' + (0.92 * r) + ' q0 ' + (0.16 * r) + ' ' + (-0.13 * r) + ' ' + (0.16 * r) + ' q' + (-0.12 * r) + ' 0 ' + (-0.12 * r) + ' ' + (-0.11 * r) + '" fill="none" stroke="#3a2e27" stroke-width="3.2" stroke-linecap="round"/>';
+    // vòm ô: 4 múi xen màu, mép dưới uốn lượn
+    s += '<g clip-path="url(#' + id + ')"><rect x="' + (-r - 2) + '" y="' + (-r - 2) + '" width="' + (2 * r + 4) + '" height="' + (r + 4) + '" fill="url(#' + id + '-g)"/>';
+    for (let i = 0; i < 4; i++) {
+      const x0 = -r + i * 0.5 * r;
+      const x1 = x0 + 0.5 * r;
+      s += '<path d="M0 ' + (-0.99 * r) + ' L' + x0 + ' 0 Q' + ((x0 + x1) / 2) + ' ' + (-0.13 * r) + ' ' + x1 + ' 0 Z" fill="' + (i % 2 ? '#ffffff' : '#000000') + '" opacity="' + (i % 2 ? 0.1 : 0.08) + '"/>';
+    }
+    s += '<path d="M' + (-0.62 * r) + ' ' + (-0.5 * r) + ' Q' + (-0.42 * r) + ' ' + (-0.86 * r) + ' ' + (-0.06 * r) + ' ' + (-0.93 * r) + '" fill="none" stroke="#ffffff" stroke-width="3" stroke-linecap="round" opacity="0.28"/>';
+    s += '</g>';
+    // mép dưới uốn lượn (che phần thẳng của vòm)
+    let edge = 'M' + (-r) + ' 0';
+    for (let i = 0; i < 4; i++) {
+      const x0 = -r + i * 0.5 * r;
+      edge += ' Q' + (x0 + 0.25 * r) + ' ' + (-0.13 * r) + ' ' + (x0 + 0.5 * r) + ' 0';
+    }
+    s += '<path d="' + edge + ' L' + r + ' 4 L' + (-r) + ' 4 Z" fill="#c9d6d8" opacity="0.0"/>';
+    s += '<path d="' + edge + '" fill="none" stroke="#2c3e48" stroke-width="1.6" stroke-linejoin="round"/>';
+    // gân ô
+    s += '<g stroke="#2c3e48" stroke-width="1" opacity="0.55" fill="none">';
+    [-r, -0.5 * r, 0, 0.5 * r, r].forEach((x) => { s += '<path d="M0 ' + (-0.99 * r) + ' Q' + (x * 0.62) + ' ' + (-0.62 * r) + ' ' + x + ' 0"/>'; });
+    s += '</g>';
+    // chóp ô và đầu gân
+    s += '<path d="M0 ' + (-0.99 * r) + ' V' + (-1.14 * r) + '" stroke="#3a2e27" stroke-width="2.4" stroke-linecap="round"/>';
+    [-r, -0.5 * r, 0.5 * r, r].forEach((x) => { s += '<circle cx="' + x + '" cy="0" r="1.6" fill="#2c3e48"/>'; });
+    // giọt mưa nảy trên mặt ô
+    s += '<g stroke="#f1f5f6" stroke-width="1.2" stroke-linecap="round" fill="none" opacity="0.9">' +
+      '<path d="M' + (-0.5 * r) + ' ' + (-0.95 * r) + ' q-3 -5 -6 -2 M' + (0.2 * r) + ' ' + (-1.08 * r) + ' q2 -6 6 -3 M' + (0.62 * r) + ' ' + (-0.86 * r) + ' q4 -4 7 0"/></g>';
+    s += '</g>';
+    return s;
+  }
 
   function svg(titleId) {
     return [
@@ -134,20 +146,19 @@ window.NNBT = window.NNBT || {};
       '<path d="M354 118 h16 l-3 7 h-10z" fill="#4d5154"/>',
       '<circle cx="362" cy="127" r="3.5" fill="#ffe4a8"/>',
 
-      // walk: ba người đi dưới mưa (nhìn từ phía sau); anh đứng bên trái nhìn theo
-      '<g data-layer="walk" class="scene-layer">',
-        person(a(ANH, { x: 74, y: 236, s: 0.95, pose: 'stand' })),
-        person(a(EM, { x: 222, y: 246, s: 0.84 })),
-        person(a(LIEN, { x: 252, y: 246, s: 0.84 })),
-        person(a(TAM, { x: 284, y: 247, s: 0.86 })),
-      '</g>',
+      // walk + return: ba hàng dấu chân gợn nước trên mặt đường ướt — ba người vừa đi qua dưới mưa
+      '<g data-layer="walk return" class="scene-layer">', footprints(), '</g>',
 
-      // return: anh cầm ô chạy ra về phía mọi người
+      // return: chiếc ô của anh lướt qua màn mưa về phía mọi người (không vẽ người)
       '<g data-layer="return" class="scene-layer">',
-        person(a(ANH, { x: 150, y: 250, s: 0.95, pose: 'run', lean: 8, umbrella: ANH_UMBRELLA })),
-        person(a(EM, { x: 250, y: 246, s: 0.82 })),
-        person(a(LIEN, { x: 280, y: 246, s: 0.82 })),
-        person(a(TAM, { x: 312, y: 247, s: 0.84 })),
+        '<ellipse cx="168" cy="268" rx="46" ry="5" fill="#3e4a58" opacity="0.22" filter="url(#wc-wash)"/>',
+        '<g stroke="#eef3f5" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.75">',
+          '<path d="M66 166 q24 -6 40 0 M56 188 q28 -5 48 2 M72 208 q20 -4 34 1"/>',
+        '</g>',
+        '<g stroke="#dfe9ec" stroke-width="1.4" stroke-linecap="round" fill="none" opacity="0.85">',
+          '<path d="M150 262 q-6 -9 -12 -4 M158 264 q0 -10 -6 -12 M178 263 q6 -9 12 -4 M170 265 q2 -9 8 -10"/>',
+        '</g>',
+        umbrella(170, 168, 60, -14, ANH_UMBRELLA),
       '</g>',
 
       // Mưa (hai lớp, trượt dọc liền mạch theo chiều cao hoa văn). Lớp "quiet" chỉ để mưa xa.

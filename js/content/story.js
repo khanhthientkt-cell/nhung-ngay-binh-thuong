@@ -84,7 +84,7 @@ window.NNBT = window.NNBT || {};
           id: 'aurora',
           label: 'Dưới bầu trời cực quang, một giấc mơ tương lai của hai người.', // ĐÃ CHỐT
           postcardLine: { text: 'Dưới bầu trời cực quang, giấc mơ tương lai của hai đứa mình.' },
-          alt: 'bầu trời đêm đầy sao với dải cực quang xanh, hai người ngồi cạnh nhau trên đồi tuyết, nhìn từ phía sau'
+          alt: 'bầu trời đêm đầy sao với dải cực quang xanh, một chiếc lều sáng ấm trên đồi tuyết, hai hàng dấu chân đi cạnh nhau dẫn tới lều'
         },
         {
           id: 'custom',
@@ -200,7 +200,7 @@ window.NNBT = window.NNBT || {};
           id: 'rain',
           scene: 'walk',
           approved: true,
-          alt: 'Tranh màu nước: ba người đi cùng nhau dưới mưa trên con phố Đà Lạt, nhìn từ phía sau; ở bên trái, một người đứng nhìn theo.',
+          alt: 'Tranh màu nước: trên con phố Đà Lạt ướt mưa, ba hàng dấu chân nối nhau đi về phía xa, nước gợn lên ở những bước mới nhất.',
           text: [
             'Hôm đó, anh thấy em với chị Liên đang đi cùng anh Tâm dưới trời mưa mà anh Tâm lại không có ô.'
           ],
@@ -212,7 +212,7 @@ window.NNBT = window.NNBT || {};
           id: 'umbrella',
           scene: 'return',
           approved: true,
-          alt: 'Tranh màu nước: người đứng bên trái giờ cầm ô chạy ra mưa, về phía ba người đang đi.',
+          alt: 'Tranh màu nước: một chiếc ô xanh mở rộng lướt qua màn mưa, về phía ba hàng dấu chân trên mặt đường.',
           text: [
             'Anh không nhớ lúc ấy mình đã nghĩ gì nhiều đâu. Chỉ nhớ là anh quay lại lấy ô, rồi chạy trở ra để đi cùng mọi người.'
           ]
@@ -244,13 +244,13 @@ window.NNBT = window.NNBT || {};
           text: [
             'Hồi hai đứa mình còn ở gần nhau, có rất nhiều ngày trôi qua mà chẳng có gì đặc biệt.'
           ],
-          hotspot: { x: 57, y: 47, label: 'Mũ bảo hiểm', icon: 'helmet' },
+          hotspot: { x: 57, y: 72, label: 'Mũ bảo hiểm', icon: 'helmet' },
           hint: { text: 'Chạm vào chiếc mũ bảo hiểm nhé.' }
         },
         {
           id: 'ride',
           scene: 'ride',
-          alt: 'Tranh màu nước: anh chở vợ trên xe máy qua con phố buổi sáng, cả hai đội mũ bảo hiểm.',
+          alt: 'Tranh màu nước: chiếc xe tay ga đỗ trước dãy nhà phố buổi sáng, một chiếc mũ bảo hiểm màu cam đất treo trên tay lái, một chiếc màu vàng mù tạt đặt trên yên.',
           text: [
             'Mỗi ngày, anh chở vợ đi làm, rồi lại đón vợ về.'
           ],
@@ -260,7 +260,7 @@ window.NNBT = window.NNBT || {};
         {
           id: 'cafe',
           scene: 'cafe',
-          alt: 'Tranh màu nước: hai người ngồi cạnh nhau trong quán cà phê, nhìn từ phía sau, mỗi người một chiếc laptop, trên bàn có hai chiếc ly.',
+          alt: 'Tranh màu nước: mặt bàn quán cà phê nhìn từ trên xuống, hai chiếc laptop mở cạnh nhau, hai ly cà phê đá và một chậu cây nhỏ.',
           text: [
             'Có những hôm, hai đứa ngồi ở quán cà phê, mỗi người làm việc riêng của mình, ngay bên cạnh nhau.'
           ],
@@ -270,17 +270,17 @@ window.NNBT = window.NNBT || {};
         {
           id: 'bedwork',
           scene: 'bedwork',
-          alt: 'Tranh màu nước: buổi tối trong phòng ngủ, hai người ngồi trên giường, mỗi người một chiếc laptop mở trên đùi.',
+          alt: 'Tranh màu nước: buổi tối trong phòng ngủ, hai chiếc laptop mở sáng trên giường, phía sau là hai chiếc gối, đèn ngủ ấm bên cạnh.',
           text: [
             'Về đến nhà, cả hai lại tiếp tục làm việc trên giường.'
           ],
-          hotspot: { x: 88, y: 18, label: 'Gập hai chiếc laptop', icon: 'laptops' },
+          hotspot: { x: 50, y: 83, label: 'Gập hai chiếc laptop', icon: 'laptops' },
           hint: { text: 'Chạm vào hai chiếc laptop để gập máy nhé.' }
         },
         {
           id: 'sleep',
           scene: 'sleep',
-          alt: 'Tranh màu nước: đêm, hai chiếc laptop đã gập trên tủ đầu giường, hai người ôm nhau ngủ dưới tấm chăn.',
+          alt: 'Tranh màu nước: đêm, hai chiếc laptop đã gập trên tủ đầu giường, hai chiếc gối sát nhau dưới tấm chăn, trăng ngoài cửa sổ, hai đôi dép dưới chân giường.',
           text: [
             'Khi xong việc, hai đứa ôm nhau rồi ngủ.'
           ]
@@ -323,13 +323,13 @@ window.NNBT = window.NNBT || {};
           text: [
             'Ở cạnh vợ, anh không phải lúc nào cũng cần tỏ ra là một người trưởng thành.'
           ],
-          hotspot: { x: 72, y: 60, label: 'Vòng tay ôm', icon: 'hug' },
+          hotspot: { x: 50, y: 62, label: 'Vòng tay ôm', icon: 'hug' },
           hint: { text: 'Chạm vào vòng tay ôm nhé.' }
         },
         {
           id: 'hug',
           scene: 'hug',
-          alt: 'Tranh màu nước: nhìn nghiêng, vợ đứng phía sau, vòng tay ôm lấy chiếc bụng tròn của anh.',
+          alt: 'Tranh màu nước: trên chiếc sofa, chiếc áo len nâu đỏ của vợ vòng hai tay áo ôm lấy chiếc áo len xanh than tròn bụng của anh, vài trái tim nhỏ bay lên.',
           text: [
             'Vợ ôm lấy chiếc “bụng mỡ” của anh.'
           ],
@@ -339,7 +339,7 @@ window.NNBT = window.NNBT || {};
         {
           id: 'song',
           scene: 'song',
-          alt: 'Tranh màu nước: vợ nghêu ngao hát, vài nốt nhạc bay lên; anh đứng cạnh.',
+          alt: 'Tranh màu nước: hai chiếc áo len ngồi cạnh nhau trên sofa, nốt nhạc bay lên từ phía chiếc áo nâu đỏ của vợ.',
           text: [
             'Vợ nghêu ngao hát, rồi trêu là muốn cắn anh, nuốt anh vào bụng.'
           ]
@@ -348,7 +348,7 @@ window.NNBT = window.NNBT || {};
           id: 'child',
           scene: 'child',
           photos: [PHOTOS.cheek],
-          alt: 'Tranh màu nước: hai người ngồi sát cạnh nhau trên chiếc sofa dưới ánh đèn ấm, nhìn từ phía sau.',
+          alt: 'Tranh màu nước: góc sofa dưới ánh đèn ấm, hai chiếc gối tựa vào nhau, tấm chăn mỏng vắt bên cạnh.',
           text: [
             'Những lúc ấy, anh thấy mình được cưng chiều như một đứa trẻ.',
             'Và anh cảm nhận được, đó là cách yêu thương rất riêng mà vợ dành cho anh.'
@@ -381,7 +381,7 @@ window.NNBT = window.NNBT || {};
             'Bây giờ, hai đứa mình ở hai nơi: một ngôi nhà sáng đèn ở Việt Nam, một ngôi nhà sáng đèn ở Đài Loan.',
             'Hai nơi, nhưng vẫn là cùng một câu chuyện.'
           ],
-          hotspot: { x: 53, y: 24, label: 'Điểm sáng trên đường bay', icon: 'spark' },
+          hotspot: { x: 26.8, y: 53.4, label: 'Điểm sáng trên đường bay', icon: 'spark' },
           hint: { text: 'Chạm vào điểm sáng nhé.' }
         },
         {
@@ -403,7 +403,7 @@ window.NNBT = window.NNBT || {};
           text: [
             'Có chuyến trở về dự lễ tốt nghiệp của vợ.'
           ],
-          hotspot: { x: 70.5, y: 87, label: 'Điểm sáng: kỷ niệm tiếp theo', icon: 'spark' },
+          hotspot: { x: 76.5, y: 88.7, label: 'Điểm sáng: kỷ niệm tiếp theo', icon: 'spark' },
           hint: { text: 'Chạm vào điểm sáng nhé.' }
         },
         {
@@ -413,7 +413,7 @@ window.NNBT = window.NNBT || {};
           text: [
             'Có lần anh đổi kế hoạch chuyến bay để chăm vợ khi vợ bị bệnh.'
           ],
-          hotspot: { x: 85.5, y: 87, label: 'Điểm sáng: kỷ niệm tiếp theo', icon: 'spark' },
+          hotspot: { x: 90, y: 88.7, label: 'Điểm sáng: kỷ niệm tiếp theo', icon: 'spark' },
           hint: { text: 'Chạm vào điểm sáng nhé.' }
         },
         {
@@ -440,7 +440,7 @@ window.NNBT = window.NNBT || {};
           text: [
             'Nhưng cả hai vẫn muốn học cách hiểu nhau hơn.'
           ],
-          hotspot: { x: 59, y: 65, label: 'Con đường phía trước', icon: 'road' },
+          hotspot: { x: 40, y: 77.3, label: 'Con đường phía trước', icon: 'road' },
           hint: { text: 'Chạm vào con đường nhé.' }
         },
         {

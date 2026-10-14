@@ -1,132 +1,171 @@
 /*
  * ch4-two-places.js — Minh họa Chương 4: Hai nơi, một câu chuyện.
  *
- * Bản đồ màu nước GIẢN LƯỢC (không chính xác về địa lý): Việt Nam, Đài Loan, Nhật Bản.
- * Hai ngôi nhà sáng đèn — một ở Việt Nam, một ở Đài Loan. KHÔNG gán nhà nào là của ai,
- * vị trí ngôi nhà trong lãnh thổ chỉ mang tính minh họa (không phải thành phố cụ thể).
- * Các kỷ niệm gặp lại là ba "con tem" ở góc dưới (không đặt lên vị trí địa lý nào, trừ Nhật Bản sáng lên ở nhịp chuyến đi Nhật).
+ * Bản đồ THẬT (Natural Earth, public domain — xem js/art/geo.js): đất liền và đảo, KHÔNG vẽ biên giới,
+ * không ghi tên quần đảo. Khung: 100°E–150°E, ~7°N–40,5°N, chiếu Mercator, 400×300.
+ * Hai ngôi nhà sáng đèn — một ở Việt Nam, một ở Đài Loan. KHÔNG gán nhà nào là của ai;
+ * vị trí ngôi nhà chỉ mang tính minh họa (không phải thành phố cụ thể).
  *
  * Lớp theo nhịp:
- *   homes      — bản đồ, hai nhà sáng đèn, đường bay chấm nối hai nơi
+ *   homes      — bản đồ, hai nhà sáng đèn, đường bay có máy bay nhỏ
  *   graduation — con tem 1 sáng (mũ tốt nghiệp)
  *   flight     — con tem 2 sáng (máy bay)
  *   japan      — con tem 3 sáng (núi Phú Sĩ), Nhật Bản sáng nhẹ
- *   hard       — một đám mây xám giữa hai nhà, ánh sáng dịu đi (bất đồng, không quy lỗi)
- *   learn      — mây tan dần, đèn ấm lại
- *   future     — con đường vàng bình minh từ hai nhà nhập làm một, hướng về phía trước
+ *   hard       — mây xám giữa hai nhà, ánh sáng dịu đi (bất đồng, không quy lỗi)
+ *   learn      — mây tan dần
+ *   future     — hai con đường vàng bình minh từ hai nhà nhập làm một, hướng về phía trước
  */
 window.NNBT = window.NNBT || {};
 
 (function (NNBT) {
   'use strict';
 
-  // Đường viền giản lược (chữ S: bắc rộng, eo hẹp miền Trung, nam phình ra, mũi Cà Mau).
-  const VIETNAM =
-    'M78 48 L110 40 L138 50 L132 64 L120 78 L112 92 L118 108 L130 124 L142 140 L150 158 L154 178 L150 196 ' +
-    'L138 212 L120 226 L100 240 L88 252 L84 240 L90 226 L98 214 L110 204 L122 188 L126 170 L120 150 ' +
-    'L110 132 L98 116 L86 100 L74 84 L64 70 L68 56 Z';
-  // Lục địa xung quanh (phía tây và phía bắc, kéo sang bờ biển đối diện Đài Loan)
-  const MAINLAND =
-    'M0 0 H400 V10 Q350 18 318 34 Q296 46 280 72 L270 82 Q256 64 232 56 Q196 50 160 52 L138 50 L110 40 L78 48 ' +
-    'L68 56 L64 70 L74 84 L86 100 L98 116 L110 132 L120 150 L126 170 L122 188 L110 204 L98 214 L90 226 ' +
-    'L58 230 L0 232 Z';
+  // Tọa độ đã chiếu (xem geo.project('ch4', lon, lat))
+  const VN_HOUSE = [60.8, 225.2];   // ~107,6°E 16°N — minh họa
+  const TW_HOUSE = [168.0, 159.7];  // ~121°E 23,7°N
+  const JAPAN = [300.0, 49.8];      // ~137,5°E 35,6°N
+  const ARC_CTRL = [100, 140];
+  const STAMPS_X = [252, 306, 360];
+  const STAMP_Y = 266;
 
-  const VN_HOUSE = [132, 158];
-  const TW_HOUSE = [297, 112];
-
-  function house(x, y, cls) {
-    return '<g class="' + (cls || '') + '" transform="translate(' + x + ' ' + y + ')">' +
-      '<circle cx="0" cy="-4" r="22" fill="url(#c4-glow)"/>' +
-      '<path d="M-8 4 V-5 L0 -12 L8 -5 V4 Z" fill="#f7ecd9" stroke="#8a6a4f" stroke-width="1.2" stroke-linejoin="round"/>' +
-      '<path d="M-10 -4 L0 -13 L10 -4" stroke="#9c4f2d" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
+  function house(x, y) {
+    return '<g transform="translate(' + x + ' ' + y + ')">' +
+      '<circle cx="0" cy="-5" r="20" fill="url(#c4-glow)"/>' +
+      '<ellipse cx="0" cy="4.5" rx="9" ry="2" fill="#5a3a22" opacity="0.18"/>' +
+      '<path d="M-8 4 V-5 L0 -12 L8 -5 V4 Z" fill="#fbf3e4" stroke="#7d5a3f" stroke-width="1.1" stroke-linejoin="round"/>' +
+      '<path d="M-10.5 -4 L0 -13.5 L10.5 -4" stroke="#9c4f2d" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
       '<rect x="-3" y="-3" width="6" height="5" rx="0.8" fill="#f2b84b"/>' +
+      '<path d="M4.5 -9.5 V-13 H6.8 V-7.5" fill="#9c4f2d"/>' +
       '</g>';
   }
 
-  // Con tem kỷ niệm: khung răng cưa + biểu tượng vẽ tay
+  // Con tem kỷ niệm: khung răng cưa + hình vẽ tay
   function stamp(x, y, inner, litLayers) {
-    const frame = '<rect x="-23" y="-23" width="46" height="46" rx="3" fill="#fbf4e6" stroke="#c9b08c" stroke-width="1.5" stroke-dasharray="3 2.4"/>';
-    const off = '<g transform="translate(' + x + ' ' + y + ')" opacity="0.55">' + frame +
-      '<g opacity="0.35">' + inner + '</g></g>';
-    const on = '<g data-layer="' + litLayers + '" class="scene-layer" transform="translate(' + x + ' ' + y + ')">' +
-      '<rect x="-23" y="-23" width="46" height="46" rx="3" fill="#fff6e4" stroke="#b4552f" stroke-width="1.6" stroke-dasharray="3 2.4"/>' +
-      '<rect x="-18" y="-18" width="36" height="36" rx="2" fill="#f6dcc0"/>' + inner + '</g>';
+    const frame = '<rect x="-21" y="-21" width="42" height="42" rx="3" fill="#fbf4e6" stroke="#c9b08c" stroke-width="1.4" stroke-dasharray="3 2.4"/>';
+    const off = '<g transform="translate(' + x + ' ' + y + ')" opacity="0.6">' + frame + '<g opacity="0.35">' + inner + '</g></g>';
+    const on = '<g data-layer="' + litLayers + '" class="scene-layer" transform="translate(' + x + ' ' + y + ') rotate(' + (x % 3 - 1) * 3 + ')">' +
+      '<rect x="-21" y="-21" width="42" height="42" rx="3" fill="#fff6e4" stroke="#b4552f" stroke-width="1.5" stroke-dasharray="3 2.4"/>' +
+      '<rect x="-16.5" y="-16.5" width="33" height="33" rx="2" fill="#f6dcc0"/>' + inner + '</g>';
     return off + on;
   }
 
-  const CAP = '<path d="M-12 -3 L0 -9 L12 -3 L0 3 Z" fill="#3c3a39"/><path d="M-7 0 V6 Q0 10 7 6 V0" fill="#3c3a39"/><path d="M12 -3 V5" stroke="#d6ad55" stroke-width="1.5"/>';
-  const PLANE = '<path d="M-12 2 L12 -6 L13 -3 L2 2 L5 9 L2 10 L-3 4 L-9 6 L-10 4 Z" fill="#5f7f92"/>';
-  const FUJI = '<path d="M-14 9 L-4 -7 Q0 -10 4 -7 L14 9 Z" fill="#7f9fb3"/><path d="M-4 -7 Q0 -10 4 -7 L6 -3 L3 -4 L0 -2 L-3 -4 L-6 -3 Z" fill="#fbf4e6"/><circle cx="9" cy="-9" r="3.5" fill="#e07a5f"/>';
+  const CAP = '<path d="M-11 -3 L0 -8.5 L11 -3 L0 2.5 Z" fill="#3c3a39"/><path d="M-6.5 0 V5.5 Q0 9 6.5 5.5 V0" fill="#3c3a39"/><path d="M11 -3 V4.5" stroke="#d6ad55" stroke-width="1.4"/>';
+  const PLANE_STAMP = '<path d="M-11 2 L11 -5.5 L12 -2.8 L2 2 L4.6 8.4 L1.8 9.3 L-2.8 3.6 L-8.3 5.5 L-9.2 3.6 Z" fill="#5f7f92"/>';
+  const FUJI = '<path d="M-13 8 L-3.6 -6.4 Q0 -9 3.6 -6.4 L13 8 Z" fill="#7f9fb3"/><path d="M-3.6 -6.4 Q0 -9 3.6 -6.4 L5.4 -2.7 L2.7 -3.6 L0 -1.8 L-2.7 -3.6 L-5.4 -2.7 Z" fill="#fbf4e6"/><circle cx="8" cy="-8" r="3.2" fill="#e07a5f"/>';
+
+  // Kinh tuyến / vĩ tuyến mờ (mỗi 10°)
+  function graticule() {
+    const g = NNBT.geo;
+    let s = '';
+    [110, 120, 130, 140].forEach((lon) => {
+      const x = g.project('ch4', lon, 20)[0].toFixed(1);
+      s += '<path d="M' + x + ' 0 V300"/>';
+    });
+    [10, 20, 30, 40].forEach((lat) => {
+      const y = g.project('ch4', 120, lat)[1].toFixed(1);
+      s += '<path d="M0 ' + y + ' H400"/>';
+    });
+    return '<g stroke="#8fb0b6" stroke-width="0.6" stroke-dasharray="2 4" opacity="0.45" fill="none">' + s + '</g>';
+  }
+
+  function compass(x, y) {
+    return '<g transform="translate(' + x + ' ' + y + ')" opacity="0.8">' +
+      '<circle r="17" fill="none" stroke="#9c7b57" stroke-width="0.8"/>' +
+      '<circle r="13" fill="none" stroke="#9c7b57" stroke-width="0.5" stroke-dasharray="1.5 2"/>' +
+      '<path d="M0 -15 L3 0 L0 15 L-3 0 Z" fill="#c9a57a"/>' +
+      '<path d="M0 -15 L3 0 L-3 0 Z" fill="#9c4f2d"/>' +
+      '<path d="M-15 0 L0 2.4 L15 0 L0 -2.4 Z" fill="#d9c3a0"/>' +
+      '<text y="-20" text-anchor="middle" font-size="7" fill="#7d5a3f" font-family="Be Vietnam Pro, sans-serif" font-weight="500">B</text>' +
+      '</g>';
+  }
+
+  function label(x, y, text, size) {
+    return '<text x="' + x + '" y="' + y + '" font-family="Charm, Georgia, serif" font-size="' + (size || 12) +
+      '" fill="#6b5442" text-anchor="middle" letter-spacing="0.6" style="paint-order:stroke" stroke="#f3e8d2" stroke-width="2.4" stroke-linejoin="round">' + text + '</text>';
+  }
 
   function svg(titleId) {
-    const arc = 'M' + VN_HOUSE[0] + ' ' + (VN_HOUSE[1] - 10) + ' Q 212 30 ' + TW_HOUSE[0] + ' ' + (TW_HOUSE[1] - 12);
+    const land = NNBT.geo ? NNBT.geo.ch4.d : '';
+    const arc = 'M' + VN_HOUSE[0] + ' ' + (VN_HOUSE[1] - 12) + ' Q ' + ARC_CTRL[0] + ' ' + ARC_CTRL[1] + ' ' + TW_HOUSE[0] + ' ' + (TW_HOUSE[1] - 12);
+    // Máy bay nhỏ ở giữa đường bay, quay theo hướng bay
+    const mx = 0.25 * VN_HOUSE[0] + 0.5 * ARC_CTRL[0] + 0.25 * TW_HOUSE[0];
+    const my = 0.25 * (VN_HOUSE[1] - 12) + 0.5 * ARC_CTRL[1] + 0.25 * (TW_HOUSE[1] - 12);
+    const ang = Math.atan2((TW_HOUSE[1] - 12) - (VN_HOUSE[1] - 12), TW_HOUSE[0] - VN_HOUSE[0]) * 180 / Math.PI;
+
     return [
-      '<svg class="scene-art" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="' + titleId + '">',
+      '<svg class="scene-art" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" role="img" aria-labelledby="' + titleId + '">',
       '<title id="' + titleId + '"></title>',
       '<defs>',
-        '<linearGradient id="c4-sea" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d9e6e4"/><stop offset="1" stop-color="#cbdcdc"/></linearGradient>',
-        '<radialGradient id="c4-glow"><stop offset="0" stop-color="#ffd98a" stop-opacity="0.85"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient>',
+        '<linearGradient id="c4-sea" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#dbe9ea"/><stop offset="1" stop-color="#c2d8dc"/></linearGradient>',
+        '<linearGradient id="c4-land" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f1e5ca"/><stop offset="1" stop-color="#e7d2ab"/></linearGradient>',
+        '<radialGradient id="c4-glow"><stop offset="0" stop-color="#ffd98a" stop-opacity="0.9"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient>',
         '<radialGradient id="c4-sun"><stop offset="0" stop-color="#ffe3a0" stop-opacity="0.95"/><stop offset="1" stop-color="#ffe3a0" stop-opacity="0"/></radialGradient>',
-        '<linearGradient id="c4-road" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9b85c"/><stop offset="1" stop-color="#f6d58a"/></linearGradient>',
+        '<linearGradient id="c4-road" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#e2ad4f"/><stop offset="1" stop-color="#f6d58a"/></linearGradient>',
+        '<filter id="c4-halo" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="3"/></filter>',
+        '<filter id="c4-grain"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="11"/>',
+          '<feColorMatrix values="0 0 0 0 0.35  0 0 0 0 0.3  0 0 0 0 0.25  0 0 0 0.09 0"/></filter>',
       '</defs>',
 
-      // Biển
+      // Biển + lưới tọa độ + sóng
       '<rect width="400" height="300" fill="url(#c4-sea)"/>',
-      '<g stroke="#b9cfcf" stroke-width="1" fill="none" opacity="0.7">',
-        '<path d="M200 170 q10 -4 20 0 t20 0 M230 210 q10 -4 20 0 t20 0 M300 180 q10 -4 20 0 t20 0 M190 250 q10 -4 20 0 t20 0"/>',
+      graticule(),
+      '<g stroke="#a9c3c8" stroke-width="0.9" fill="none" stroke-linecap="round" opacity="0.8">',
+        '<path d="M222 120 q6 -3 12 0 t12 0 M250 200 q6 -3 12 0 t12 0 M330 180 q6 -3 12 0 t12 0 M120 270 q6 -3 12 0 t12 0 M350 90 q6 -3 12 0 t12 0"/>',
       '</g>',
-      // Lục địa (mờ) và Việt Nam (đậm hơn)
-      '<g filter="url(#wc-wash)">',
-        '<path d="' + MAINLAND + '" fill="#ece0c8" opacity="0.85"/>',
-        '<path d="' + VIETNAM + '" fill="#e8cfa6"/>',
-        // Đài Loan
-        '<path d="M298 92 Q309 97 306 113 Q302 129 293 134 Q286 121 288 107 Q290 95 298 92 Z" fill="#e8cfa6"/>',
-        // Nhật Bản (giản lược)
-        '<path d="M396 16 Q384 40 369 58 Q357 72 346 84 Q353 87 363 77 Q380 61 398 38 Z" fill="#ece0c8"/>',
-        '<path d="M340 90 Q348 88 350 96 Q344 102 338 98 Z" fill="#ece0c8"/>',
-      '</g>',
-      '<path d="' + VIETNAM + '" fill="none" stroke="#c9a57a" stroke-width="1.2" stroke-linejoin="round" opacity="0.7" filter="url(#wc-line)"/>',
+
+      // Đất liền: quầng nước nông, bãi cát, đất, nét bờ biển
+      '<path d="' + land + '" fill="none" stroke="#9cc0c6" stroke-width="9" opacity="0.35" filter="url(#c4-halo)"/>',
+      '<path d="' + land + '" fill="none" stroke="#f8f0de" stroke-width="3.2" stroke-linejoin="round" opacity="0.9"/>',
+      '<path d="' + land + '" fill="url(#c4-land)"/>',
+      '<path d="' + land + '" fill="none" stroke="#9c7b57" stroke-width="0.7" stroke-linejoin="round" opacity="0.7"/>',
+      '<rect width="400" height="300" filter="url(#c4-grain)" opacity="1"/>',
+
+      // Tên nước (viết tay)
+      label(30, 181, 'Việt Nam', 12),
+      label(203, 172, 'Đài Loan', 11),
+      label(330, 22, 'Nhật Bản', 12),
+      compass(370, 132),
 
       // Nhật Bản sáng nhẹ khi kể chuyến đi Nhật
-      '<g data-layer="japan" class="scene-layer">',
-        '<circle cx="368" cy="60" r="34" fill="url(#c4-glow)" opacity="0.8"/>',
-      '</g>',
+      '<g data-layer="japan" class="scene-layer"><circle cx="' + JAPAN[0] + '" cy="' + JAPAN[1] + '" r="40" fill="url(#c4-glow)" opacity="0.85"/></g>',
 
-      // Đường bay chấm nối hai nơi
-      '<path d="' + arc + '" fill="none" stroke="#9c4f2d" stroke-width="1.6" stroke-dasharray="2 6" stroke-linecap="round" opacity="0.7"/>',
+      // Đường bay + máy bay nhỏ
+      '<path d="' + arc + '" fill="none" stroke="#9c4f2d" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round" opacity="0.8"/>',
+      '<g transform="translate(' + mx.toFixed(1) + ' ' + my.toFixed(1) + ') rotate(' + ang.toFixed(1) + ')">' +
+        '<path d="M-7 1 L7 -1.5 L8 0 L7 1.5 L-7 -1 Z M-1 0 L-4 -6 L-1.5 -6 L3 0 L-1.5 6 L-4 6 Z M-6 0 L-8 -3 L-6.6 -3 L-4.4 0 L-6.6 3 L-8 3 Z" fill="#5f7f92"/>' +
+      '</g>',
 
       // Mây xám giữa hai nhà (bất đồng) — và lúc mây tan
       '<g data-layer="hard" class="scene-layer">',
-        '<rect width="400" height="300" fill="#5d7a92" opacity="0.28" style="mix-blend-mode:multiply"/>',
-        '<g filter="url(#wc-wash)" fill="#9eabb6" opacity="0.9"><circle cx="196" cy="72" r="22"/><circle cx="220" cy="62" r="26"/><circle cx="246" cy="74" r="20"/><rect x="186" y="70" width="72" height="20" rx="10"/></g>',
-        '<g stroke="#8797a4" stroke-width="1.2" stroke-linecap="round" opacity="0.7"><path d="M200 98 l-3 9 M214 100 l-3 9 M228 98 l-3 9 M242 100 l-3 9"/></g>',
+        '<rect width="400" height="300" fill="#5d7a92" opacity="0.26" style="mix-blend-mode:multiply"/>',
+        '<g filter="url(#wc-wash)" fill="#9eabb6" opacity="0.92"><circle cx="100" cy="150" r="20"/><circle cx="122" cy="140" r="24"/><circle cx="146" cy="152" r="18"/><rect x="90" y="148" width="66" height="18" rx="9"/></g>',
+        '<g stroke="#8797a4" stroke-width="1.2" stroke-linecap="round" opacity="0.7"><path d="M104 172 l-3 8 M118 174 l-3 8 M132 172 l-3 8 M146 174 l-3 8"/></g>',
       '</g>',
       '<g data-layer="learn" class="scene-layer">',
-        '<g filter="url(#wc-wash)" fill="#c3ccd3" opacity="0.55"><circle cx="160" cy="50" r="16"/><circle cx="178" cy="44" r="18"/><circle cx="276" cy="52" r="15"/><circle cx="292" cy="46" r="17"/></g>',
+        '<g filter="url(#wc-wash)" fill="#c3ccd3" opacity="0.55"><circle cx="72" cy="122" r="14"/><circle cx="88" cy="116" r="16"/><circle cx="178" cy="122" r="13"/><circle cx="192" cy="116" r="15"/></g>',
       '</g>',
 
       // Con đường vàng hướng về tương lai
       '<g data-layer="future" class="scene-layer">',
-        '<circle cx="386" cy="174" r="66" fill="url(#c4-sun)"/>',
-        '<path d="M' + VN_HOUSE[0] + ' ' + (VN_HOUSE[1] + 6) + ' Q 170 190 236 194" stroke="url(#c4-road)" stroke-width="7" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
-        '<path d="M' + TW_HOUSE[0] + ' ' + (TW_HOUSE[1] + 6) + ' Q 294 168 236 194" stroke="url(#c4-road)" stroke-width="7" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
-        '<path d="M236 194 Q 310 202 398 172" stroke="url(#c4-road)" stroke-width="11" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
+        '<circle cx="388" cy="196" r="64" fill="url(#c4-sun)"/>',
+        '<path d="M' + VN_HOUSE[0] + ' ' + (VN_HOUSE[1] + 6) + ' Q 100 250 160 232" stroke="url(#c4-road)" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
+        '<path d="M' + TW_HOUSE[0] + ' ' + (TW_HOUSE[1] + 6) + ' Q 186 206 160 232" stroke="url(#c4-road)" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
+        '<path d="M160 232 Q 262 222 398 192" stroke="url(#c4-road)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
       '</g>',
 
       // Hai ngôi nhà sáng đèn
       house(VN_HOUSE[0], VN_HOUSE[1]),
       house(TW_HOUSE[0], TW_HOUSE[1]),
-      // Đèn dịu đi khi có mây
       '<g data-layer="hard" class="scene-layer">',
-        '<circle cx="' + VN_HOUSE[0] + '" cy="' + (VN_HOUSE[1] - 4) + '" r="16" fill="#6f8496" opacity="0.35"/>',
-        '<circle cx="' + TW_HOUSE[0] + '" cy="' + (TW_HOUSE[1] - 4) + '" r="16" fill="#6f8496" opacity="0.35"/>',
+        '<circle cx="' + VN_HOUSE[0] + '" cy="' + (VN_HOUSE[1] - 5) + '" r="15" fill="#6f8496" opacity="0.32"/>',
+        '<circle cx="' + TW_HOUSE[0] + '" cy="' + (TW_HOUSE[1] - 5) + '" r="15" fill="#6f8496" opacity="0.32"/>',
       '</g>',
 
-      // Ba con tem kỷ niệm gặp lại (ẩn ở nhịp đầu, ở góc dưới bên phải)
+      // Ba con tem kỷ niệm gặp lại (từ nhịp tốt nghiệp trở đi)
       '<g data-layer="graduation flight japan hard learn future" class="scene-layer">',
-        stamp(222, 262, CAP, 'graduation flight japan hard learn future'),
-        stamp(282, 262, PLANE, 'flight japan hard learn future'),
-        stamp(342, 262, FUJI, 'japan hard learn future'),
+        stamp(STAMPS_X[0], STAMP_Y, CAP, 'graduation flight japan hard learn future'),
+        stamp(STAMPS_X[1], STAMP_Y, PLANE_STAMP, 'flight japan hard learn future'),
+        stamp(STAMPS_X[2], STAMP_Y, FUJI, 'japan hard learn future'),
       '</g>',
 
       '</svg>'

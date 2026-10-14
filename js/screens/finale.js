@@ -416,8 +416,9 @@
             replaying ? el('p', { class: 'badge', text: story.ui.chapter.replayBadge }) : null,
             (story.photos && NNBT.photos)
               ? el('div', { class: 'finale__photos' }, [
-                  NNBT.photos.polaroid(story.photos.flowers, { rotate: -4, zoom: true }),
-                  NNBT.photos.polaroid(story.photos.river, { rotate: 3, zoom: true })
+                  // Tải ngay (không chờ), để màn hình kết không bao giờ hiện khung ảnh trống
+                  NNBT.photos.polaroid(story.photos.flowers, { rotate: -4, zoom: true, lazy: false }),
+                  NNBT.photos.polaroid(story.photos.river, { rotate: 3, zoom: true, lazy: false })
                 ])
               : el('figure', { class: 'finale__end-art', 'aria-hidden': 'true', html: NNBT.icons.icon('aurora', 'finale__end-svg') }),
             el('h1', { class: 'finale__ending', text: F.ending }),

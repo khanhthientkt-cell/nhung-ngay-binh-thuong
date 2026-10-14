@@ -211,8 +211,11 @@ window.NNBT = window.NNBT || {};
       ctx.beginPath(); ctx.moveTo(830, 162); ctx.lineTo(842, 120); ctx.lineTo(818, 120); ctx.closePath(); ctx.fill();
     },
 
-    // Dưới bầu trời cực quang: trời đêm, dải cực quang, hai người ngồi trên đồi nhìn từ phía sau
+    // Dưới bầu trời cực quang: trời đêm, dải cực quang, chiếc lều sáng ấm trên đồi tuyết,
+    // hai hàng dấu chân đi cạnh nhau dẫn tới lều (tĩnh vật — không vẽ người)
     aurora(ctx, w, h, rand) {
+      const k = h / 740; // tranh thấp lại khi có lời nhắn → co theo chiều cao
+      const hy = Math.round(h * 0.6);
       let g = ctx.createLinearGradient(0, 0, 0, h);
       g.addColorStop(0, '#0e1f33');
       g.addColorStop(1, '#2a4a63');
@@ -221,13 +224,13 @@ window.NNBT = window.NNBT || {};
       for (let i = 0; i < 140; i++) {
         ctx.globalAlpha = 0.35 + 0.6 * rand();
         ctx.fillStyle = '#f3f6ff';
-        ctx.beginPath(); ctx.arc(rand() * w, rand() * h * 0.7, 0.8 + rand() * 1.8, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(rand() * w, rand() * hy * 0.95, 0.8 + rand() * 1.8, 0, Math.PI * 2); ctx.fill();
       }
       ctx.globalAlpha = 1;
       ctx.save();
       ctx.globalCompositeOperation = 'lighter';
       ctx.lineCap = 'round';
-      [[90, 170, 0.5], [70, 240, 0.4], [110, 120, 0.3]].forEach(([lw, y0, a]) => {
+      [[90, 170 * k, 0.5], [70, 240 * k, 0.4], [110, 120 * k, 0.3]].forEach(([lw, y0, a]) => {
         const lg = ctx.createLinearGradient(0, 0, w, 0);
         lg.addColorStop(0, 'rgba(110,230,180,0)');
         lg.addColorStop(0.35, 'rgba(110,230,180,' + a + ')');
@@ -243,18 +246,88 @@ window.NNBT = window.NNBT || {};
         ctx.stroke();
       });
       ctx.restore();
-      // đồi tuyết
-      ctx.fillStyle = '#1c3146';
-      ctx.beginPath(); ctx.moveTo(0, 470); ctx.bezierCurveTo(260, 410, 600, 420, w, 480); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = 'rgba(190,215,235,0.35)'; ctx.lineWidth = 4;
-      ctx.beginPath(); ctx.moveTo(0, 470); ctx.bezierCurveTo(260, 410, 600, 420, w, 480); ctx.stroke();
-      // hai người ngồi cạnh nhau (nhìn từ phía sau, không có mặt)
-      [[440, true], [500, false]].forEach(([x, longHair]) => {
-        ctx.fillStyle = '#0c1a28';
-        roundRect(ctx, x - 26, 432, 52, 66, 22); ctx.fill();
-        ctx.beginPath(); ctx.arc(x, 418, 17, 0, Math.PI * 2); ctx.fill();
-        if (longHair) { roundRect(ctx, x - 17, 418, 34, 40, 12); ctx.fill(); }
+      // dãy đồi xa với vài cây thông
+      ctx.fillStyle = '#1f3a52';
+      ctx.beginPath(); ctx.moveTo(0, hy - 36 * k); ctx.bezierCurveTo(220, hy - 90 * k, 520, hy - 20 * k, w, hy - 70 * k); ctx.lineTo(w, hy + 40); ctx.lineTo(0, hy + 40); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#152c40';
+      [[60, 1], [96, 0.75], [128, 0.9], [812, 0.8], [850, 1.1], [892, 0.7]].forEach(([x, s]) => {
+        const th = 70 * s * k;
+        const by = hy - 30 * k;
+        ctx.beginPath(); ctx.moveTo(x, by - th); ctx.lineTo(x - th * 0.32, by); ctx.lineTo(x + th * 0.32, by); ctx.closePath(); ctx.fill();
       });
+      // đồi tuyết phía trước, sáng nhẹ dưới cực quang
+      const ridge = (c) => { c.moveTo(0, hy + 10); c.bezierCurveTo(260, hy - 50 * k, 600, hy - 40 * k, w, hy + 20); };
+      g = ctx.createLinearGradient(0, hy - 50 * k, 0, h);
+      g.addColorStop(0, '#7f9fb6');
+      g.addColorStop(1, '#3b5872');
+      ctx.fillStyle = g;
+      ctx.beginPath(); ridge(ctx); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(200,240,225,0.55)'; ctx.lineWidth = 4;
+      ctx.beginPath(); ridge(ctx); ctx.stroke();
+
+      // chiếc lều sáng ấm
+      const tx = w * 0.64;
+      const ty = hy + (h - hy) * 0.34;
+      const ts = Math.max(0.65, k);
+      const tw = 132 * ts;
+      const th = 156 * ts;
+      let glow = ctx.createRadialGradient(tx, ty - th * 0.3, 10, tx, ty - th * 0.3, 260 * ts);
+      glow.addColorStop(0, 'rgba(255,205,130,0.55)');
+      glow.addColorStop(1, 'rgba(255,205,130,0)');
+      ctx.fillStyle = glow;
+      ctx.fillRect(tx - 300, ty - th - 200, 600, 520);
+      // vệt sáng hắt ra tuyết trước cửa lều
+      ctx.fillStyle = 'rgba(255,214,150,0.35)';
+      ctx.beginPath(); ctx.ellipse(tx, ty + 14 * ts, tw * 0.9, 18 * ts, 0, 0, Math.PI * 2); ctx.fill();
+      // dây néo
+      ctx.strokeStyle = 'rgba(30,45,60,0.6)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(tx, ty - th); ctx.lineTo(tx - tw * 1.55, ty + 6); ctx.moveTo(tx, ty - th); ctx.lineTo(tx + tw * 1.55, ty + 6); ctx.stroke();
+      // thân lều
+      let tg = ctx.createLinearGradient(tx - tw, 0, tx + tw, 0);
+      tg.addColorStop(0, '#d98a4f');
+      tg.addColorStop(0.5, '#efb06c');
+      tg.addColorStop(1, '#b8692f');
+      ctx.fillStyle = tg;
+      ctx.beginPath(); ctx.moveTo(tx - tw, ty); ctx.quadraticCurveTo(tx - tw * 0.45, ty - th * 0.45, tx, ty - th); ctx.quadraticCurveTo(tx + tw * 0.45, ty - th * 0.45, tx + tw, ty); ctx.closePath(); ctx.fill();
+      // cửa lều sáng
+      ctx.fillStyle = '#ffe3a8';
+      ctx.beginPath(); ctx.moveTo(tx - tw * 0.36, ty); ctx.quadraticCurveTo(tx - tw * 0.12, ty - th * 0.36, tx, ty - th * 0.7); ctx.quadraticCurveTo(tx + tw * 0.12, ty - th * 0.36, tx + tw * 0.36, ty); ctx.closePath(); ctx.fill();
+      // vạt cửa vén sang một bên
+      ctx.fillStyle = '#a95f2a';
+      ctx.beginPath(); ctx.moveTo(tx, ty - th * 0.7); ctx.quadraticCurveTo(tx + tw * 0.2, ty - th * 0.3, tx + tw * 0.46, ty); ctx.lineTo(tx + tw * 0.34, ty); ctx.quadraticCurveTo(tx + tw * 0.14, ty - th * 0.34, tx, ty - th * 0.7); ctx.closePath(); ctx.fill();
+      // cọc chóp lều
+      ctx.strokeStyle = '#4a3020'; ctx.lineWidth = 4; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(tx - 8 * ts, ty - th - 14 * ts); ctx.lineTo(tx + 3, ty - th + 6); ctx.moveTo(tx + 8 * ts, ty - th - 14 * ts); ctx.lineTo(tx - 3, ty - th + 6); ctx.stroke();
+      // tuyết đọng chân lều
+      ctx.fillStyle = 'rgba(225,238,245,0.85)';
+      ctx.beginPath(); ctx.ellipse(tx - tw * 0.7, ty + 2, tw * 0.34, 7 * ts, 0, 0, Math.PI * 2); ctx.ellipse(tx + tw * 0.75, ty + 2, tw * 0.3, 6 * ts, 0, 0, Math.PI * 2); ctx.fill();
+
+      // hai hàng dấu chân đi cạnh nhau, từ phía trước dẫn tới cửa lều (gần to, xa nhỏ)
+      const p0 = [w * 0.2, h + 20];
+      const p1 = [w * 0.34, ty + (h - ty) * 0.35];
+      const p2 = [tx - tw * 0.1, ty + 16 * ts];
+      const at = (t) => [
+        (1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0],
+        (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]
+      ];
+      ctx.fillStyle = 'rgba(28,52,76,0.5)';
+      const steps = 15;
+      for (let i = 1; i < steps; i++) {
+        const t = i / steps;
+        const [x, y] = at(t);
+        const [x2, y2] = at(Math.min(1, t + 0.01));
+        const ang = Math.atan2(y2 - y, x2 - x);
+        const s = 1 - t * 0.68;
+        const nx = -Math.sin(ang);
+        const ny = Math.cos(ang);
+        [-1, 1].forEach((trail) => {
+          const side = (i % 2 ? 1 : -1) * 6 * s;
+          const off = trail * 24 * s + side;
+          ctx.beginPath();
+          ctx.ellipse(x + nx * off, y + ny * off, 11 * s, 5 * s, ang, 0, Math.PI * 2);
+          ctx.fill();
+        });
+      }
     },
 
     // Nơi em tự chọn: bản đồ giấy, đường chấm, chiếc ghim và tên địa điểm

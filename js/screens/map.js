@@ -81,7 +81,17 @@
     return out;
   }
 
-  function terrainSvg(layout, chapters, status, mapAlt) {
+  // Nền bản đồ thật, rất mờ (Natural Earth — js/art/geo.js): Việt Nam, Đài Loan, Nhật Bản và vùng biển quanh.
+  function geoBackdrop(layoutName) {
+    const g = NNBT.geo && NNBT.geo[layoutName];
+    if (!g) return '';
+    return '<g class="map__geo">' +
+      '<path d="' + g.d + '" fill="#e8d8b8" opacity="0.5"/>' +
+      '<path d="' + g.d + '" fill="none" stroke="#b49a76" stroke-width="1" vector-effect="non-scaling-stroke" opacity="0.45"/>' +
+      '</g>';
+  }
+
+  function terrainSvg(layout, chapters, status, mapAlt, layoutName) {
     const px = (id) => {
       const p = layout.points[id];
       return [Math.round((p[0] / 100) * layout.w), Math.round((p[1] / 100) * layout.h)];
@@ -116,6 +126,8 @@
 
     return (
       '<svg class="map__terrain" viewBox="0 0 ' + layout.w + ' ' + layout.h + '" preserveAspectRatio="none" role="img" aria-label="' + mapAlt + '">' +
+        '<rect width="' + layout.w + '" height="' + layout.h + '" fill="#e3ecea" opacity="0.55"/>' +
+        geoBackdrop(layoutName) +
         '<g filter="url(#wc-wash)">' + washes + '</g>' +
         '<g class="map__rain" stroke="var(--mist)" stroke-width="2" stroke-linecap="round" opacity="0.45">' + rain + '</g>' +
         '<g fill="none" stroke-linecap="round">' + path + '</g>' +
@@ -174,7 +186,7 @@
           ? document.activeElement.dataset.stop : null;
 
         mapBox.dataset.layout = layoutName;
-        mapBox.innerHTML = terrainSvg(layout, chapters, status, t.mapAlt);
+        mapBox.innerHTML = terrainSvg(layout, chapters, status, t.mapAlt, layoutName);
 
         const list = el('ol', { class: 'map__stops' }, chapters.map((c) => {
           const st = status[c.id];
