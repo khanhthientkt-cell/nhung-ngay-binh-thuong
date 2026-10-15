@@ -516,10 +516,14 @@ window.NNBT = window.NNBT || {};
       confirm: 'Bắt đầu lại',
       cancel: 'Thôi, giữ lại'
     },
-    // Nút âm thanh đang ẩn vì dự án chưa có âm thanh (SOUND_AVAILABLE trong js/main.js).
+    // Nút âm thanh trên thanh trên cùng: chỉ hiện khi có tệp nhạc nền (js/content/music-config.js).
     sound: {
       on: 'Âm thanh: bật',
       off: 'Âm thanh: tắt'
+    },
+    // Nhãn của khung nhạc ở góc màn hình, và chữ hiện khi rê chuột lên nút âm thanh ("Nhạc nền: <tên bài>").
+    music: {
+      credit: 'Nhạc nền'
     },
     storage: {
       corrupt: 'Không đọc được tiến trình cũ nên câu chuyện bắt đầu lại từ đầu.',

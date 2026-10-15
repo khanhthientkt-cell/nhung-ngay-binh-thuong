@@ -291,3 +291,54 @@ button { font: inherit; color: inherit; }
     scroll-behavior: auto !important;
   }
 }
+
+/* ---------- Khung nhạc nền (js/components/music.js) ----------
+   Thẻ giấy nhỏ ở góc phải dưới, chứa trình phát YouTube 200×200 (YouTube không cho ẩn trình phát).
+   Trên laptop, sân khấu chừa một cột bên phải để thẻ không che nội dung. */
+.music-card {
+  position: fixed;
+  right: 16px;
+  bottom: 16px;
+  z-index: 30;
+  width: 224px;
+  padding: 10px 12px 8px;
+  border-radius: var(--radius-page);
+  background: var(--paper-light);
+  box-shadow: 0 10px 28px -14px rgba(60, 40, 20, 0.45), 0 0 0 1px rgba(138, 119, 104, 0.18);
+  transform: rotate(1.2deg);
+}
+.music-card__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+.music-card__disc {
+  flex: none;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background:
+    radial-gradient(circle, var(--warm-deep) 0 4px, #2f2a28 4.5px 6px, transparent 6.5px),
+    repeating-radial-gradient(circle, #3a3432 0 1.5px, #2a2523 1.5px 3px);
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.08);
+}
+.music-card.is-playing .music-card__disc { animation: music-disc 3.2s linear infinite; }
+@keyframes music-disc { to { transform: rotate(360deg); } }
+.music-card__text { display: grid; line-height: 1.25; min-width: 0; }
+.music-card__label { font-size: 0.75rem; letter-spacing: 0.04em; text-transform: uppercase; color: var(--ink-soft); }
+.music-card__title { font-family: var(--font-display); font-size: 1.05rem; color: var(--ink); }
+.music-card__player {
+  width: 200px;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 4px;
+  background: #1f1b1a;
+}
+.music-card__player iframe { display: block; width: 200px; height: 200px; border: 0; }
+.music-card__credit { margin: 6px 0 0; font-size: 0.72rem; color: var(--ink-soft); }
+
+@media (min-width: 1100px) {
+  body.has-music-card .stage { padding-right: 248px; }
+}
+@media (max-width: 1099px) {
+  body.has-music-card .stage { padding-bottom: 300px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .music-card.is-playing .music-card__disc { animation: none; }
+}

@@ -33,7 +33,7 @@ window.NNBT = window.NNBT || {};
         seen: {}                   // { chapterId: [sceneId, ...] } — kỷ niệm đã xem
       },
       audio: {
-        enabled: false             // mặc định tắt, không bao giờ tự phát
+        muted: false               // nhạc nền tự chạy từ cú bấm đầu tiên; chỉ dừng khi người chơi tắt tiếng
       },
       replay: {                    // chế độ xem lại — chỉ tồn tại trong phiên, không lưu
         active: false,
@@ -84,7 +84,7 @@ window.NNBT = window.NNBT || {};
       });
     }
 
-    s.audio.enabled = isPlainObject(raw.audio) && raw.audio.enabled === true;
+    s.audio.muted = isPlainObject(raw.audio) && raw.audio.muted === true;
 
     if (isPlainObject(raw.replay) && raw.replay.active === true && ids.includes(raw.replay.chapter)) {
       s.replay = { active: true, chapter: raw.replay.chapter };

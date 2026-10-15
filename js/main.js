@@ -9,32 +9,30 @@
 
   const { store, engine, ui, story } = NNBT;
 
-  // Dự án chưa có âm thanh nào (xem ASSETS.md). Ẩn nút để không có điều khiển "bấm mà không có gì xảy ra".
-  // Khi thêm âm thanh: đổi thành true và nối nút với phần phát âm thanh.
-  const SOUND_AVAILABLE = false;
-
+  // Nút âm thanh chỉ hiện khi nhạc nền tải được (js/content/music-config.js),
+  // để không có điều khiển "bấm mà không có gì xảy ra".
   function setupSoundToggle() {
     const btn = document.getElementById('btn-sound');
     const label = document.getElementById('sound-label');
-    if (!SOUND_AVAILABLE) {
-      btn.hidden = true;
-      return;
-    }
+    btn.hidden = true;
+    const music = NNBT.music;
+    if (!music || !music.configured) return;
 
     function render(state) {
-      const on = state.audio.enabled;
+      const on = !state.audio.muted;
       btn.setAttribute('aria-pressed', String(on));
       btn.classList.toggle('is-on', on);
       label.textContent = on ? story.ui.sound.on : story.ui.sound.off;
     }
 
-    btn.addEventListener('click', () => {
-      const turningOn = !store.get().audio.enabled;
-      store.update((s) => { s.audio.enabled = turningOn; });
+    music.whenReady().then((ok) => {
+      if (!ok) return;
+      if (music.title) btn.title = story.ui.music.credit + ': ' + music.title;
+      btn.addEventListener('click', () => music.toggle());
+      store.subscribe(render);
+      render(store.get());
+      btn.hidden = false;
     });
-
-    store.subscribe(render);
-    render(store.get());
   }
 
   function setupHomeButton() {
@@ -69,6 +67,7 @@
   function boot() {
     engine.init(document.getElementById('stage'));
     if (NNBT.decor) NNBT.decor.init(); // trang trí nền, đổi theo chương
+    if (NNBT.music) NNBT.music.init(); // nhạc nền (nếu có tệp), không tự phát
     setupSoundToggle();
     setupHomeButton();
     setupDebugPanel();
