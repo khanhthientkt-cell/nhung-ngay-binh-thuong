@@ -3,10 +3,11 @@
  *
  * Các bước (lưu ở s.scene khi đọc lần đầu):
  *   0 blank    — bản đồ mở rộng thành một trang giấy còn trống
- *   1 choose   — chọn 1 trong 4 kiểu chuyến đi; ô địa điểm (khi tự chọn); ô lời nhắn (không bắt buộc)
- *   2 postcard — vẽ bưu thiếp (Canvas → ảnh PNG), xem trước, lưu ảnh, chia sẻ (nếu máy hỗ trợ)
- *   3 letter   — lời cuối (nguyên văn đã chốt)
- *   4 end      — dòng kết thúc (nguyên văn đã chốt)
+ *   1 dream    — Đoạn 1 của anh: giấc mơ cầu hôn dưới bầu trời cực quang (tranh hộp nhẫn trên đồi tuyết)
+ *   2 choose   — chọn 1 trong 4 kiểu chuyến đi; ô địa điểm (khi tự chọn); ô lời nhắn (không bắt buộc)
+ *   3 postcard — vẽ bưu thiếp (Canvas → ảnh PNG), xem trước, lưu ảnh, chia sẻ (nếu máy hỗ trợ)
+ *   4 letter   — lời cuối: Đoạn 2 của anh (nguyên văn) + chữ ký
+ *   5 end      — dòng kết thúc (nguyên văn đã chốt)
  *
  * Dữ liệu:
  *   - Kiểu chuyến đi: lưu ở choices.trip (khi đọc lần đầu).
@@ -18,7 +19,7 @@
 (function (NNBT) {
   'use strict';
 
-  const STEPS = ['blank', 'choose', 'postcard', 'letter', 'end'];
+  const STEPS = ['blank', 'dream', 'choose', 'postcard', 'letter', 'end'];
   const PRESS_GUARD_MS = 400;
 
   // Chỉ tồn tại trong phiên hiện tại.
@@ -47,6 +48,48 @@
       '<g fill="#9c4f2d"><circle cx="44" cy="214" r="5"/><circle cx="74" cy="182" r="5"/><circle cx="104" cy="168" r="5"/><circle cx="124" cy="136" r="5"/><circle cx="152" cy="118" r="5"/></g>' +
       '<circle cx="176" cy="120" r="6" fill="none" stroke="#9c4f2d" stroke-width="2"/>' +
       '<path d="M190 118 C 230 108, 270 96, 330 64" fill="none" stroke="#e9b85c" stroke-width="2.4" stroke-dasharray="1 10" stroke-linecap="round" opacity="0.7"/>' +
+    '</svg>';
+
+  // Giấc mơ dưới bầu trời cực quang: trời đêm, dải cực quang, đồi tuyết, hộp nhẫn nhỏ đang mở (tĩnh vật — không vẽ người)
+  const DREAM_ART =
+    '<svg viewBox="0 0 400 260" role="img" aria-labelledby="finale-dream-title">' +
+      '<title id="finale-dream-title"></title>' +
+      '<defs>' +
+        '<linearGradient id="fd-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0e1f33"/><stop offset="1" stop-color="#2a4a63"/></linearGradient>' +
+        '<linearGradient id="fd-aur" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6ee6b4" stop-opacity="0"/><stop offset="0.35" stop-color="#6ee6b4" stop-opacity="0.75"/><stop offset="0.75" stop-color="#8caaf5" stop-opacity="0.6"/><stop offset="1" stop-color="#8caaf5" stop-opacity="0"/></linearGradient>' +
+        '<linearGradient id="fd-snow" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fbccd"/><stop offset="1" stop-color="#58768e"/></linearGradient>' +
+        '<radialGradient id="fd-glow"><stop offset="0" stop-color="#ffe3a8" stop-opacity="0.95"/><stop offset="1" stop-color="#ffe3a8" stop-opacity="0"/></radialGradient>' +
+        '<filter id="fd-blur" x="-20%" y="-50%" width="140%" height="200%"><feGaussianBlur stdDeviation="7"/></filter>' +
+      '</defs>' +
+      '<rect width="400" height="260" rx="8" fill="url(#fd-sky)"/>' +
+      '<g fill="#f3f6ff">' +
+        [[30, 30], [70, 62], [118, 24], [160, 50], [212, 18], [250, 44], [300, 26], [352, 58], [380, 20], [96, 96], [330, 100], [190, 90]]
+          .map(([x, y], i) => '<circle cx="' + x + '" cy="' + y + '" r="' + (i % 3 ? 1.1 : 1.7) + '" opacity="' + (0.5 + (i % 4) * 0.12) + '"/>').join('') +
+      '</g>' +
+      '<g filter="url(#fd-blur)" class="dream-aurora">' +
+        '<path d="M-20 110 C 80 40, 170 130, 260 70 S 380 50, 420 80" stroke="url(#fd-aur)" stroke-width="34" fill="none"/>' +
+        '<path d="M-20 140 C 90 90, 190 150, 290 100 S 380 90, 420 110" stroke="url(#fd-aur)" stroke-width="20" fill="none" opacity="0.7"/>' +
+      '</g>' +
+      '<path d="M0 182 C 90 160, 170 166, 240 172 S 350 160, 400 168 V260 H0 Z" fill="#1f3a52"/>' +
+      '<path d="M0 200 C 110 180, 260 186, 400 196 V260 H0 Z" fill="url(#fd-snow)"/>' +
+      '<path d="M0 200 C 110 180, 260 186, 400 196" fill="none" stroke="#d6f2e8" stroke-width="1.6" opacity="0.6"/>' +
+      // hai hàng dấu chân dẫn tới hộp nhẫn
+      '<g fill="#2b4760" opacity="0.55">' +
+        [[60, 250, 1], [86, 242, 0.92], [110, 235, 0.85], [134, 229, 0.78], [158, 224, 0.72], [180, 220, 0.66]]
+          .map(([x, y, s]) => '<ellipse cx="' + x + '" cy="' + y + '" rx="' + (6 * s) + '" ry="' + (2.6 * s) + '"/><ellipse cx="' + (x + 6) + '" cy="' + (y + 9 * s) + '" rx="' + (6 * s) + '" ry="' + (2.6 * s) + '"/>').join('') +
+      '</g>' +
+      // hộp nhẫn đang mở
+      '<circle cx="214" cy="196" r="66" fill="url(#fd-glow)" class="dream-glow"/>' +
+      '<g transform="translate(214 214) scale(1.7)">' +
+        '<ellipse cx="0" cy="9" rx="20" ry="4" fill="#173047" opacity="0.5"/>' +
+        '<path d="M-15 -14 L15 -14 L13 -24 L-13 -24 Z" fill="#8c2f3a"/>' +
+        '<rect x="-15" y="-4" width="30" height="13" rx="3" fill="#a63a46"/>' +
+        '<rect x="-12" y="-7" width="24" height="5" rx="2" fill="#f4e6cf"/>' +
+        '<path d="M-15 -4 H15" stroke="#6e2430" stroke-width="1"/>' +
+        '<circle cx="0" cy="-9" r="5" fill="none" stroke="#e8c46a" stroke-width="2.2"/>' +
+        '<path d="M-2.6 -15.5 L0 -19 L2.6 -15.5 L0 -13.5 Z" fill="#eaf6ff" stroke="#bfe1f2" stroke-width="0.6"/>' +
+        '<g stroke="#fff6d6" stroke-width="1.2" stroke-linecap="round" class="dream-sparkle"><path d="M8 -24 v-5 M5.5 -26.5 h5 M-10 -20 v-4 M-12 -22 h4"/></g>' +
+      '</g>' +
     '</svg>';
 
   NNBT.engine.register('finale', {
@@ -101,7 +144,7 @@
       }
 
       function show(i, focus) {
-        if (i === 2 && !validChoice()) i = 1;
+        if (i === 3 && !validChoice()) i = 2;
         step = i;
         if (!replaying) {
           ctx.store.update((s) => {
@@ -150,8 +193,22 @@
             el('div', { class: 'story-text' }, F.blank.text.paragraphs.map((p) =>
               el('p', { class: 'story-text__p is-new', 'data-draft': F.blank.text.draft ? 'true' : null }, p))),
             el('div', { class: 'actions' }, [
-              button({ label: story.ui.chapter.continue, variant: 'primary', onClick: () => guard() && show(1) }),
+              button({ label: story.ui.chapter.continue, variant: 'primary', onClick: () => guard() && show(1) }), // → giấc mơ
               button({ label: story.ui.nav.back, variant: 'secondary', onClick: () => ctx.back() })
+            ])
+          ]));
+        },
+
+        dream() {
+          const fig = el('figure', { class: 'finale__art finale__art--dream', html: DREAM_ART });
+          fig.querySelector('title').textContent = F.dream.alt;
+          root.append(el('div', { class: 'page finale__page' }, [
+            header(),
+            fig,
+            el('div', { class: 'story-text' }, F.dream.text.map((p) => el('p', { class: 'story-text__p is-new' }, p))),
+            el('div', { class: 'actions' }, [
+              button({ label: story.ui.chapter.continue, variant: 'primary', onClick: () => guard() && show(2) }),
+              button({ label: story.ui.nav.back, variant: 'secondary', onClick: () => guard() && show(0) })
             ])
           ]));
         },
@@ -222,7 +279,7 @@
             err,
             el('div', { class: 'actions' }, [
               el('button', { type: 'submit', class: 'btn btn--primary', 'data-draft': C.submit.draft ? 'true' : null }, C.submit.text),
-              button({ label: story.ui.nav.back, variant: 'secondary', onClick: () => guard() && show(0) })
+              button({ label: story.ui.nav.back, variant: 'secondary', onClick: () => guard() && show(1) })
             ])
           ]);
 
@@ -247,7 +304,7 @@
             session.message = msgInput.value.trim().slice(0, C.messageMax);
             if (!replaying) ctx.store.update((s) => { s.choices.trip = trip; });
             revokeBlob();
-            show(2);
+            show(3);
           });
 
           root.append(el('div', { class: 'page finale__page' }, [header(), form]));
@@ -267,8 +324,8 @@
           const saveBtn = button({ label: P.save.text, variant: 'primary', onClick: save });
           const shareBtn = button({ label: P.share.text, variant: 'secondary', onClick: share });
           const retryBtn = button({ label: P.retry.text, variant: 'secondary', onClick: () => generate() });
-          const rechooseBtn = button({ label: P.rechoose.text, variant: 'quiet', onClick: () => guard() && show(1) });
-          const nextBtn = button({ label: P.next, variant: 'secondary', onClick: () => guard() && show(3) });
+          const rechooseBtn = button({ label: P.rechoose.text, variant: 'quiet', onClick: () => guard() && show(2) });
+          const nextBtn = button({ label: P.next, variant: 'secondary', onClick: () => guard() && show(4) });
           saveBtn.disabled = true;
           shareBtn.hidden = true;
           retryBtn.hidden = true;
@@ -392,8 +449,8 @@
           const L = F.letter;
           root.append(el('div', { class: 'page finale__page' }, [
             header(),
-            el('div', { class: 'finale__letter' }, L.paragraphs.map((p, i) =>
-              el('p', { class: 'finale__letter-p' + (i === 0 ? ' finale__letter-salutation' : '') }, p))),
+            el('div', { class: 'finale__letter' }, L.paragraphs.map((p) => el('p', { class: 'finale__letter-p' }, p))
+              .concat(L.signature ? [el('p', { class: 'finale__letter-p finale__letter-signature' }, L.signature)] : [])),
             el('div', { class: 'actions' }, [
               button({
                 label: story.ui.chapter.continue,
@@ -402,10 +459,10 @@
                   if (!guard()) return;
                   // Đi hết lời cuối → Chương 5 đã đi qua (chỉ khi đọc lần đầu).
                   if (!replaying) ctx.store.completeChapter('ch5');
-                  show(4);
+                  show(5);
                 }
               }),
-              button({ label: story.ui.nav.back, variant: 'secondary', onClick: () => guard() && show(validChoice() ? 2 : 1) })
+              button({ label: story.ui.nav.back, variant: 'secondary', onClick: () => guard() && show(validChoice() ? 3 : 2) })
             ])
           ]));
         },
@@ -423,7 +480,7 @@
               : el('figure', { class: 'finale__end-art', 'aria-hidden': 'true', html: NNBT.icons.icon('aurora', 'finale__end-svg') }),
             el('h1', { class: 'finale__ending', text: F.ending }),
             el('div', { class: 'actions finale__end-actions' }, [
-              button({ label: A.postcard.text, variant: 'secondary', onClick: () => guard() && show(2) }),
+              button({ label: A.postcard.text, variant: 'secondary', onClick: () => guard() && show(3) }),
               button({ label: A.memories, variant: 'secondary', onClick: () => ctx.go('memories') }),
               button({ label: A.home, variant: 'quiet', onClick: () => ctx.go('start', {}, { clearHistory: true }) })
             ])

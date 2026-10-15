@@ -12,6 +12,7 @@
  * Lớp:
  *   road   — con phố mưa, chưa có ai (lời dẫn mở đầu)
  *   walk   — ba hàng dấu chân trên mặt đường ướt
+ *   run    — nhấn giữ: chiếc ô lao vào từ bên trái theo độ giữ (--hold)
  *   return — chiếc ô mở lướt về phía những hàng dấu chân
  *   quiet  — con phố vắng, mưa nhẹ (đoạn suy ngẫm cuối)
  */
@@ -147,10 +148,10 @@ window.NNBT = window.NNBT || {};
       '<circle cx="362" cy="127" r="3.5" fill="#ffe4a8"/>',
 
       // walk + return: ba hàng dấu chân gợn nước trên mặt đường ướt — ba người vừa đi qua dưới mưa
-      '<g data-layer="walk return" class="scene-layer">', footprints(), '</g>',
+      '<g data-layer="walk return run" class="scene-layer">', footprints(), '</g>',
 
       // return: chiếc ô của anh lướt qua màn mưa về phía mọi người (không vẽ người)
-      '<g data-layer="return" class="scene-layer">',
+      '<g data-layer="return run" class="scene-layer"><g class="hold-fly">',
         '<ellipse cx="168" cy="268" rx="46" ry="5" fill="#3e4a58" opacity="0.22" filter="url(#wc-wash)"/>',
         '<g stroke="#eef3f5" stroke-width="1.6" stroke-linecap="round" fill="none" opacity="0.75">',
           '<path d="M66 166 q24 -6 40 0 M56 188 q28 -5 48 2 M72 208 q20 -4 34 1"/>',
@@ -159,12 +160,12 @@ window.NNBT = window.NNBT || {};
           '<path d="M150 262 q-6 -9 -12 -4 M158 264 q0 -10 -6 -12 M178 263 q6 -9 12 -4 M170 265 q2 -9 8 -10"/>',
         '</g>',
         umbrella(170, 168, 60, -14, ANH_UMBRELLA),
-      '</g>',
+      '</g></g>',
 
       // Mưa (hai lớp, trượt dọc liền mạch theo chiều cao hoa văn). Lớp "quiet" chỉ để mưa xa.
       '<g class="rain" aria-hidden="true">',
         '<rect class="rain-sheet rain-sheet--far" x="-10" y="-40" width="420" height="380" fill="url(#c1-rain-far)"/>',
-        '<g data-layer="road walk return" class="scene-layer">',
+        '<g data-layer="road walk return run" class="scene-layer">',
           '<rect class="rain-sheet rain-sheet--near" x="-10" y="-60" width="420" height="400" fill="url(#c1-rain)"/>',
         '</g>',
       '</g>',

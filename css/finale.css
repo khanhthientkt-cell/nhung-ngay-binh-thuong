@@ -169,6 +169,25 @@
 .finale__letter-p { margin: 0 0 0.85em; }
 .finale__letter-p:last-child { margin-bottom: 0; }
 .finale__letter-salutation { font-size: 1.1em; }
+.finale__letter-signature {
+  margin-top: 1.4em;
+  text-align: right;
+  font-family: var(--font-display);
+  font-size: 1.5em;
+  color: var(--warm-deep);
+}
+
+/* Giấc mơ cực quang: dải cực quang lượn nhẹ, hộp nhẫn lấp lánh */
+.finale__art--dream svg { border-radius: 8px; box-shadow: var(--shadow-page); }
+.finale__art--dream .dream-aurora { animation: dream-aurora 7s ease-in-out infinite alternate; }
+.finale__art--dream .dream-glow { animation: dream-glow 2.8s ease-in-out infinite; transform-box: fill-box; transform-origin: center; }
+.finale__art--dream .dream-sparkle { animation: dream-sparkle 1.8s ease-in-out infinite; }
+@keyframes dream-aurora { from { transform: translateX(-10px); opacity: 0.85; } to { transform: translateX(10px); opacity: 1; } }
+@keyframes dream-glow { 0%, 100% { opacity: 0.75; transform: scale(0.95); } 50% { opacity: 1; transform: scale(1.06); } }
+@keyframes dream-sparkle { 0%, 100% { opacity: 0.2; } 50% { opacity: 1; } }
+@media (prefers-reduced-motion: reduce) {
+  .finale__art--dream .dream-aurora, .finale__art--dream .dream-glow, .finale__art--dream .dream-sparkle { animation: none; }
+}
 
 /* ---------- Dòng kết thúc ---------- */
 

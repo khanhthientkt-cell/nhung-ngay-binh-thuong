@@ -7,13 +7,13 @@
  * vị trí ngôi nhà chỉ mang tính minh họa (không phải thành phố cụ thể).
  *
  * Lớp theo nhịp:
- *   homes      — bản đồ, hai nhà sáng đèn, đường bay có máy bay nhỏ
- *   graduation — con tem 1 sáng (mũ tốt nghiệp)
- *   flight     — con tem 2 sáng (máy bay)
- *   japan      — con tem 3 sáng (núi Phú Sĩ), Nhật Bản sáng nhẹ
- *   hard       — mây xám giữa hai nhà, ánh sáng dịu đi (bất đồng, không quy lỗi)
- *   learn      — mây tan dần
- *   future     — hai con đường vàng bình minh từ hai nhà nhập làm một, hướng về phía trước
+ *   homes  — bản đồ, hai nhà sáng đèn, đường bay có máy bay nhỏ
+ *   meet   — ba con tem kỷ niệm sáng lần lượt khi chạm: máy bay (vợ đến thăm), mũ tốt nghiệp, núi Phú Sĩ
+ *            (khi tem thứ ba sáng, Nhật Bản sáng nhẹ)
+ *   dream  — thêm con tem "châu Âu" viền nét đứt: chuyến đi anh mong đưa vợ đến
+ *   hard   — mây giông giữa hai nhà, ánh sáng dịu đi; chạm để mây tan dần (--tap-progress)
+ *   learn  — mây đã tan
+ *   future — hai con đường vàng từ hai nhà vươn ra theo độ nhấn giữ (--hold) rồi nhập làm một
  */
 window.NNBT = window.NNBT || {};
 
@@ -27,6 +27,7 @@ window.NNBT = window.NNBT || {};
   const ARC_CTRL = [100, 140];
   const STAMPS_X = [252, 306, 360];
   const STAMP_Y = 266;
+  const EUROPE_X = 198;
 
   function house(x, y) {
     return '<g transform="translate(' + x + ' ' + y + ')">' +
@@ -40,17 +41,30 @@ window.NNBT = window.NNBT || {};
   }
 
   // Con tem kỷ niệm: khung răng cưa + hình vẽ tay
-  function stamp(x, y, inner, litLayers) {
+  // Tem tắt (mờ) + tem sáng. Tem sáng hiện khi đã chạm đủ `k` lần ở nhịp "meet" ([data-tap-show]),
+  // các nhịp sau thì luôn sáng. data-tap-show nằm ở nhóm ngoài (không transform) để hoạt ảnh nảy không đè vị trí.
+  function stamp(x, y, inner, k) {
     const frame = '<rect x="-21" y="-21" width="42" height="42" rx="3" fill="#fbf4e6" stroke="#c9b08c" stroke-width="1.4" stroke-dasharray="3 2.4"/>';
     const off = '<g transform="translate(' + x + ' ' + y + ')" opacity="0.6">' + frame + '<g opacity="0.35">' + inner + '</g></g>';
-    const on = '<g data-layer="' + litLayers + '" class="scene-layer" transform="translate(' + x + ' ' + y + ') rotate(' + (x % 3 - 1) * 3 + ')">' +
+    const on = '<g data-tap-show="' + k + '"><g transform="translate(' + x + ' ' + y + ') rotate(' + (x % 3 - 1) * 3 + ')">' +
       '<rect x="-21" y="-21" width="42" height="42" rx="3" fill="#fff6e4" stroke="#b4552f" stroke-width="1.5" stroke-dasharray="3 2.4"/>' +
-      '<rect x="-16.5" y="-16.5" width="33" height="33" rx="2" fill="#f6dcc0"/>' + inner + '</g>';
+      '<rect x="-16.5" y="-16.5" width="33" height="33" rx="2" fill="#f6dcc0"/>' + inner + '</g></g>';
     return off + on;
+  }
+
+  // Tem "châu Âu": viền nét đứt màu vàng, như một con tem còn để dành cho chuyến đi anh mong.
+  function dreamStamp(x, y) {
+    return '<g transform="translate(' + x + ' ' + y + ') rotate(-4)">' +
+      '<circle r="30" fill="url(#c4-glow)" opacity="0.7"/>' +
+      '<rect x="-21" y="-21" width="42" height="42" rx="3" fill="#fffaf0" stroke="#d6ad55" stroke-width="1.6" stroke-dasharray="4 3"/>' +
+      EIFFEL +
+      '<text y="16.5" text-anchor="middle" font-family="Charm, Georgia, serif" font-size="7.5" fill="#9c4f2d">châu Âu</text>' +
+      '</g>';
   }
 
   const CAP = '<path d="M-11 -3 L0 -8.5 L11 -3 L0 2.5 Z" fill="#3c3a39"/><path d="M-6.5 0 V5.5 Q0 9 6.5 5.5 V0" fill="#3c3a39"/><path d="M11 -3 V4.5" stroke="#d6ad55" stroke-width="1.4"/>';
   const PLANE_STAMP = '<path d="M-11 2 L11 -5.5 L12 -2.8 L2 2 L4.6 8.4 L1.8 9.3 L-2.8 3.6 L-8.3 5.5 L-9.2 3.6 Z" fill="#5f7f92"/>';
+  const EIFFEL = '<path d="M0 -17 L2.2 -6 L5.5 9 H2.6 Q0 3 -2.6 9 H-5.5 L-2.2 -6 Z" fill="#7d6a5a"/><path d="M-3.2 -2 H3.2 M-4.3 3.5 H4.3" stroke="#fffaf0" stroke-width="1"/>';
   const FUJI = '<path d="M-13 8 L-3.6 -6.4 Q0 -9 3.6 -6.4 L13 8 Z" fill="#7f9fb3"/><path d="M-3.6 -6.4 Q0 -9 3.6 -6.4 L5.4 -2.7 L2.7 -3.6 L0 -1.8 L-2.7 -3.6 L-5.4 -2.7 Z" fill="#fbf4e6"/><circle cx="8" cy="-8" r="3.2" fill="#e07a5f"/>';
 
   // Kinh tuyến / vĩ tuyến mờ (mỗi 10°)
@@ -127,7 +141,7 @@ window.NNBT = window.NNBT || {};
       compass(370, 132),
 
       // Nhật Bản sáng nhẹ khi kể chuyến đi Nhật
-      '<g data-layer="japan" class="scene-layer"><circle cx="' + JAPAN[0] + '" cy="' + JAPAN[1] + '" r="40" fill="url(#c4-glow)" opacity="0.85"/></g>',
+      '<g data-layer="meet" class="scene-layer"><g data-tap-show="3"><circle cx="' + JAPAN[0] + '" cy="' + JAPAN[1] + '" r="40" fill="url(#c4-glow)" opacity="0.85"/></g></g>',
 
       // Đường bay + máy bay nhỏ
       '<path d="' + arc + '" fill="none" stroke="#9c4f2d" stroke-width="1.5" stroke-dasharray="2 5" stroke-linecap="round" opacity="0.8"/>',
@@ -137,9 +151,9 @@ window.NNBT = window.NNBT || {};
 
       // Mây xám giữa hai nhà (bất đồng) — và lúc mây tan
       '<g data-layer="hard" class="scene-layer">',
-        '<rect width="400" height="300" fill="#5d7a92" opacity="0.26" style="mix-blend-mode:multiply"/>',
-        '<g filter="url(#wc-wash)" fill="#9eabb6" opacity="0.92"><circle cx="100" cy="150" r="20"/><circle cx="122" cy="140" r="24"/><circle cx="146" cy="152" r="18"/><rect x="90" y="148" width="66" height="18" rx="9"/></g>',
-        '<g stroke="#8797a4" stroke-width="1.2" stroke-linecap="round" opacity="0.7"><path d="M104 172 l-3 8 M118 174 l-3 8 M132 172 l-3 8 M146 174 l-3 8"/></g>',
+        '<g class="tap-fade"><rect width="400" height="300" fill="#5d7a92" opacity="0.26" style="mix-blend-mode:multiply"/></g>',
+        '<g class="tap-fade"><g filter="url(#wc-wash)" fill="#9eabb6" opacity="0.92"><circle cx="100" cy="150" r="20"/><circle cx="122" cy="140" r="24"/><circle cx="146" cy="152" r="18"/><rect x="90" y="148" width="66" height="18" rx="9"/></g>',
+        '<g stroke="#8797a4" stroke-width="1.2" stroke-linecap="round" opacity="0.7"><path d="M104 172 l-3 8 M118 174 l-3 8 M132 172 l-3 8 M146 174 l-3 8"/></g></g>',
       '</g>',
       '<g data-layer="learn" class="scene-layer">',
         '<g filter="url(#wc-wash)" fill="#c3ccd3" opacity="0.55"><circle cx="72" cy="122" r="14"/><circle cx="88" cy="116" r="16"/><circle cx="178" cy="122" r="13"/><circle cx="192" cy="116" r="15"/></g>',
@@ -148,9 +162,9 @@ window.NNBT = window.NNBT || {};
       // Con đường vàng hướng về tương lai
       '<g data-layer="future" class="scene-layer">',
         '<circle cx="388" cy="196" r="64" fill="url(#c4-sun)"/>',
-        '<path d="M' + VN_HOUSE[0] + ' ' + (VN_HOUSE[1] + 6) + ' Q 100 250 160 232" stroke="url(#c4-road)" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
-        '<path d="M' + TW_HOUSE[0] + ' ' + (TW_HOUSE[1] + 6) + ' Q 186 206 160 232" stroke="url(#c4-road)" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
-        '<path d="M160 232 Q 262 222 398 192" stroke="url(#c4-road)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
+        '<path d="M' + VN_HOUSE[0] + ' ' + (VN_HOUSE[1] + 6) + ' Q 100 250 160 232" pathLength="1" class="hold-draw" stroke="url(#c4-road)" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
+        '<path d="M' + TW_HOUSE[0] + ' ' + (TW_HOUSE[1] + 6) + ' Q 186 206 160 232" pathLength="1" class="hold-draw" stroke="url(#c4-road)" stroke-width="6" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
+        '<path d="M160 232 Q 262 222 398 192" class="hold-reveal" stroke="url(#c4-road)" stroke-width="10" fill="none" stroke-linecap="round" filter="url(#wc-line)"/>',
       '</g>',
 
       // Hai ngôi nhà sáng đèn
@@ -161,12 +175,13 @@ window.NNBT = window.NNBT || {};
         '<circle cx="' + TW_HOUSE[0] + '" cy="' + (TW_HOUSE[1] - 5) + '" r="15" fill="#6f8496" opacity="0.32"/>',
       '</g>',
 
-      // Ba con tem kỷ niệm gặp lại (từ nhịp tốt nghiệp trở đi)
-      '<g data-layer="graduation flight japan hard learn future" class="scene-layer">',
-        stamp(STAMPS_X[0], STAMP_Y, CAP, 'graduation flight japan hard learn future'),
-        stamp(STAMPS_X[1], STAMP_Y, PLANE_STAMP, 'flight japan hard learn future'),
-        stamp(STAMPS_X[2], STAMP_Y, FUJI, 'japan hard learn future'),
+      // Ba con tem kỷ niệm gặp lại (sáng lần lượt khi chạm ở nhịp "meet") và tem châu Âu (chuyến đi anh mong)
+      '<g data-layer="meet dream hard learn future" class="scene-layer">',
+        stamp(STAMPS_X[0], STAMP_Y, PLANE_STAMP, 1),
+        stamp(STAMPS_X[1], STAMP_Y, CAP, 2),
+        stamp(STAMPS_X[2], STAMP_Y, FUJI, 3),
       '</g>',
+      '<g data-layer="dream hard learn future" class="scene-layer">', dreamStamp(EUROPE_X, STAMP_Y), '</g>',
 
       '</svg>'
     ].join('');

@@ -333,11 +333,12 @@ button { font: inherit; color: inherit; }
 .music-card__player iframe { display: block; width: 200px; height: 200px; border: 0; }
 .music-card__credit { margin: 6px 0 0; font-size: 0.72rem; color: var(--ink-soft); }
 
-@media (min-width: 1100px) {
+@media (min-width: 760px) {
   body.has-music-card .stage { padding-right: 248px; }
 }
-@media (max-width: 1099px) {
-  body.has-music-card .stage { padding-bottom: 300px; }
+/* Màn hình rất hẹp (điện thoại): chừa khoảng trống dưới đáy mỗi màn hình cho thẻ nhạc */
+@media (max-width: 759px) {
+  body.has-music-card .screen { padding-bottom: 300px; }
 }
 @media (prefers-reduced-motion: reduce) {
   .music-card.is-playing .music-card__disc { animation: none; }

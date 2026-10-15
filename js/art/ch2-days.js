@@ -172,6 +172,20 @@ window.NNBT = window.NNBT || {};
       '</g>';
   }
 
+  // Tờ giấy nhớ dán trên bàn; chữ viết tay hiện khi đã chạm đủ `k` lần.
+  function stickyNote(cx, cy, rot, color, lines, k) {
+    const textY = lines.length > 1 ? -2 : 5;
+    return '<g transform="translate(' + cx + ' ' + cy + ') rotate(' + rot + ')">' +
+      '<rect x="-47" y="-22" width="94" height="46" rx="1.5" fill="#000" opacity="0.12" transform="translate(2 3)"/>' +
+      '<rect x="-47" y="-22" width="94" height="46" rx="1.5" fill="' + color + '"/>' +
+      '<rect x="-47" y="-22" width="94" height="8" fill="#000" opacity="0.05"/>' +
+      '<g data-tap-show="' + k + '">' +
+        lines.map((s, i) => '<text x="0" y="' + (textY + i * 14) + '" text-anchor="middle" font-family="Charm, Georgia, serif" font-size="' + (lines.length > 1 ? 12.5 : 15) + '" fill="#5a3a22">' + s + '</text>').join('') +
+        '<path d="M36 15 c-2.6 -2.6 -2.6 -5.2 0 -5.2 c1.3 0 2 0.8 2 1.3 c0 -0.5 0.7 -1.3 2 -1.3 c2.6 0 2.6 2.6 0 5.2 l-2 1.8 z" fill="#d97b6c"/>' +
+      '</g>' +
+      '</g>';
+  }
+
   // ---------- Phòng ngủ (bedwork / sleep), nhìn từ cuối giường ----------
   // Dây đèn nhỏ trên tường; ban đêm vẽ sau lớp phủ tối để bóng đèn vẫn sáng.
   function garland(night) {
@@ -299,9 +313,13 @@ window.NNBT = window.NNBT || {};
         glassTop(192, 70, '#b5784d'),
         glassTop(356, 146, '#e2bf7a'),
         // chậu cây nhỏ nhìn từ trên
-        '<g transform="translate(200 238)"><circle r="20" fill="#c9774f"/><circle r="16" fill="#7d5a3f"/>' +
+        '<g transform="translate(206 230)"><circle r="20" fill="#c9774f"/><circle r="16" fill="#7d5a3f"/>' +
           '<g fill="#8fa77c"><ellipse rx="6" ry="14" transform="rotate(0)"/><ellipse rx="6" ry="14" transform="rotate(60)"/><ellipse rx="6" ry="14" transform="rotate(120)"/></g>' +
           '<g fill="#a9bd8d"><ellipse rx="4" ry="10" transform="rotate(30)"/><ellipse rx="4" ry="10" transform="rotate(90)"/><ellipse rx="4" ry="10" transform="rotate(150)"/></g></g>',
+        // ba tờ giấy nhớ — chữ hiện dần khi chạm (nhịp "cafe": [data-tap-show])
+        stickyNote(62, 250, -6, '#fbe7a1', ['Mũi em cao'], 1),
+        stickyNote(142, 268, 4, '#f6cdbf', ['Mắt em to'], 2),
+        stickyNote(292, 256, -3, '#d7e8c8', ['Thi thoảng', 'hơi nhăn nhăn'], 3),
         '<rect width="400" height="300" fill="url(#c2-lamp)" opacity="0.35"/>',
       '</g>',
 

@@ -167,3 +167,191 @@
     align-items: center;
   }
 }
+
+/* ---------- Câu đố & tương tác trong nhịp ---------- */
+
+.story-play { position: relative; max-width: 34rem; }
+.story-play:empty { display: none; }
+.story-text:empty { display: none; }
+.story-text:not(:empty) + .story-play { margin-top: 1.1rem; }
+
+.quiz__q {
+  display: block;
+  margin: 0 0 0.85rem;
+  font-family: var(--font-display);
+  font-size: clamp(1.3rem, 1.1rem + 0.6vw, 1.6rem);
+  line-height: 1.35;
+  color: var(--ink);
+}
+.quiz__options { display: grid; gap: 8px; }
+.quiz__opt {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+  padding: 10px 14px;
+  border: 1px solid rgba(138, 119, 104, 0.35);
+  border-radius: 12px;
+  background: rgba(251, 246, 236, 0.85);
+  color: var(--ink);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+  transition: background 160ms var(--ease), border-color 160ms var(--ease), transform 160ms var(--ease), opacity 200ms var(--ease);
+}
+.quiz__opt:hover:not(:disabled) { background: var(--paper-light); border-color: rgba(156, 79, 45, 0.55); transform: translateX(2px); }
+.quiz__opt:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.quiz__opt[hidden] { display: none; }
+.quiz__letter {
+  flex: none;
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background: rgba(156, 79, 45, 0.1);
+  color: var(--warm-deep);
+  font-weight: 500;
+  font-size: 0.9rem;
+}
+.quiz__opt.is-wrong { opacity: 0.55; cursor: default; }
+.quiz__opt.is-wrong .quiz__text { text-decoration: line-through; text-decoration-color: rgba(156, 79, 45, 0.6); }
+.quiz__opt:disabled:not(.is-wrong):not(.is-right) { opacity: 0.5; cursor: default; }
+.quiz__opt.is-right {
+  border-color: var(--warm-deep);
+  background: #fbe9dc;
+  opacity: 1;
+  box-shadow: 0 0 0 3px rgba(156, 79, 45, 0.15);
+}
+.quiz__opt.is-right .quiz__letter { background: var(--warm-deep); color: var(--paper-light); }
+.quiz__opt.is-appearing { animation: quiz-appear 700ms var(--ease) both; border-color: rgba(214, 173, 85, 0.9); box-shadow: 0 0 0 3px rgba(214, 173, 85, 0.25), 0 0 18px rgba(214, 173, 85, 0.35); }
+@keyframes quiz-appear {
+  0%   { opacity: 0; transform: translateY(8px) scale(0.96); }
+  60%  { opacity: 1; transform: translateY(-2px) scale(1.02); }
+  100% { opacity: 1; transform: none; }
+}
+
+.play-feedback {
+  min-height: 1.6em;
+  margin: 0.7rem 0 0;
+  color: var(--warm-deep);
+  font-family: var(--font-display);
+  font-size: 1.15rem;
+}
+.play-counter { margin: 0; font-size: var(--text-small); color: var(--ink-soft); }
+
+/* Câu tự gõ */
+.open__row { display: flex; gap: 8px; }
+.open__input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 14px;
+  border: 1px solid rgba(138, 119, 104, 0.45);
+  border-radius: 12px;
+  background: var(--paper-light);
+  color: var(--ink);
+  font: inherit;
+}
+.open__input:focus-visible { outline: 3px solid var(--focus); outline-offset: 1px; }
+.open__input.is-wrong { animation: open-shake 360ms var(--ease); }
+.open__input.is-right { border-color: var(--warm-deep); box-shadow: 0 0 0 3px rgba(156, 79, 45, 0.15); }
+.open__submit { flex: none; }
+.open .btn[hidden] { display: none; }
+@keyframes open-shake {
+  0%, 100% { transform: none; }
+  25% { transform: translateX(-5px); }
+  75% { transform: translateX(5px); }
+}
+
+/* Nút nhấn giữ: thanh màu đầy dần */
+.hold { margin-top: 0.25rem; }
+.hold-btn {
+  position: relative;
+  overflow: hidden;
+  min-width: 15rem;
+  padding: 14px 22px;
+  border: 1px solid var(--warm-deep);
+  border-radius: 999px;
+  background: var(--paper-light);
+  color: var(--warm-deep);
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+  touch-action: none;
+}
+.hold-btn:focus-visible { outline: 3px solid var(--focus); outline-offset: 2px; }
+.hold-btn__fill {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(90deg, #e9b98e, var(--warm-deep));
+  transform: scaleX(0);
+  transform-origin: left;
+}
+.hold-btn__label { position: relative; }
+.hold-btn.is-holding { box-shadow: 0 0 0 4px rgba(156, 79, 45, 0.15); }
+.hold-btn.is-holding .hold-btn__label, .hold-btn.is-done .hold-btn__label { color: var(--paper-light); }
+.hold-btn.is-done { cursor: default; }
+
+/* Trái tim nhỏ bay lên */
+.play-burst { position: absolute; left: 50%; bottom: 40%; pointer-events: none; }
+.play-burst i {
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  background: #d97b6c;
+  transform: rotate(45deg);
+  animation: play-heart 1.2s var(--ease) forwards;
+  animation-delay: calc(var(--k) * 40ms);
+  opacity: 0;
+}
+.play-burst i::before, .play-burst i::after {
+  content: "";
+  position: absolute;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: inherit;
+}
+.play-burst i::before { left: -6px; }
+.play-burst i::after { top: -6px; }
+@keyframes play-heart {
+  0%   { opacity: 0; transform: translate(0, 0) rotate(45deg) scale(0.4); }
+  20%  { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--dx), -90px) rotate(45deg) scale(1); }
+}
+
+.btn.is-arriving { animation: quiz-appear 600ms var(--ease) both; }
+
+/* ---------- Hiệu ứng trong tranh theo tương tác ---------- */
+
+/* Chi tiết hiện dần theo số lần chạm */
+[data-tap-show] { transition: opacity 400ms var(--ease); }
+[data-tap-show].tap-hidden { opacity: 0; }
+.scene-figure.is-tapped [data-tap-show].tap-new { animation: tap-pop 500ms var(--ease); transform-box: fill-box; transform-origin: center; }
+@keyframes tap-pop {
+  0% { transform: scale(0.6); }
+  60% { transform: scale(1.12); }
+  100% { transform: scale(1); }
+}
+/* Vật rung rinh khi được chạm (vd chiếc bụng mỡ) */
+.scene-figure.is-tapped .tap-wobble { animation: tap-wobble 520ms var(--ease); transform-box: fill-box; transform-origin: 50% 100%; }
+@keyframes tap-wobble {
+  0%, 100% { transform: none; }
+  25% { transform: scale(1.06, 0.95); }
+  55% { transform: scale(0.97, 1.04); }
+  80% { transform: scale(1.02, 0.99); }
+}
+/* Mây tan dần theo số lần chạm */
+.tap-fade { opacity: calc(1 - var(--tap-progress, 0)); transition: opacity 400ms var(--ease); }
+
+/* Nhấn giữ: chiếc ô lao vào từ bên trái (Chương 1); hai con đường vươn ra rồi nhập làm một (Chương 4) */
+.hold-fly { transform: translateX(calc((var(--hold, 1) - 1) * 240px)); }
+.hold-draw { stroke-dasharray: 1; stroke-dashoffset: calc(1 - var(--hold, 1)); }
+.hold-reveal { opacity: clamp(0, calc(var(--hold, 1) * 2 - 1), 1); }
+
+@media (prefers-reduced-motion: reduce) {
+  .quiz__opt.is-appearing, .btn.is-arriving, .open__input.is-wrong,
+  .scene-figure.is-tapped [data-tap-show].tap-new, .scene-figure.is-tapped .tap-wobble { animation: none; }
+}

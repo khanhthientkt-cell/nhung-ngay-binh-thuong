@@ -7,8 +7,9 @@
  *
  *   grownup — phòng vắng, chiếc áo khoác và túi đồ đi làm treo trên móc cạnh cửa
  *             (hình ảnh ẩn dụ cho việc "không cần lúc nào cũng tỏ ra người lớn")
- *   hug     — trên sofa: chiếc áo len nâu đỏ (vợ) vòng hai tay áo ôm lấy chiếc áo len xanh than tròn bụng (anh)
- *   song    — hai chiếc áo len ngồi cạnh nhau, nốt nhạc bay lên từ phía chiếc áo của vợ
+ *   hug     — trên sofa: chiếc áo len nâu đỏ (vợ) vòng hai tay áo ôm lấy chiếc áo len xanh than tròn bụng (anh);
+ *             chạm để xoa bụng: áo rung rinh, nảy thêm trái tim
+ *   song    — hai chiếc áo len ngồi cạnh nhau, nốt nhạc bay lên; chạm để "cắn": thêm dấu trái tim trên áo anh
  *   child   — góc sofa ấm: hai chiếc gối tựa vào nhau, tấm chăn mỏng (nhịp này hiện ảnh thật)
  *   miss    — sofa trống, ánh xanh dịu, vài nốt nhạc mờ (khoảng cách)
  *
@@ -31,6 +32,15 @@ window.NNBT = window.NNBT || {};
 
   function heart(x, y, sc, color, cls) {
     return '<path class="' + (cls || '') + '" transform="translate(' + x + ' ' + y + ') scale(' + sc + ')" d="M0 3 C -6 -2, -6 -8, -2.5 -8 C -1 -8, 0 -7, 0 -6 C 0 -7, 1 -8, 2.5 -8 C 6 -8, 6 -2, 0 3 Z" fill="' + color + '"/>';
+  }
+
+  // Dấu "cắn" hình trái tim, viền chấm như dấu răng; hiện khi đã chạm đủ `k` lần.
+  function biteMark(x, y, rot, k) {
+    // data-tap-show nằm ở nhóm trong (không có transform) để hoạt ảnh "nảy" không đè vị trí.
+    return '<g transform="translate(' + x + ' ' + y + ') rotate(' + rot + ')"><g data-tap-show="' + k + '">' +
+      '<path d="M0 6 C -9 0, -8 -7, -3.5 -7 C -1.5 -7, 0 -5.5, 0 -4.5 C 0 -5.5, 1.5 -7, 3.5 -7 C 8 -7, 9 0, 0 6 Z" fill="#e58b80" opacity="0.85"/>' +
+      '<path d="M0 6 C -9 0, -8 -7, -3.5 -7 C -1.5 -7, 0 -5.5, 0 -4.5 C 0 -5.5, 1.5 -7, 3.5 -7 C 8 -7, 9 0, 0 6 Z" fill="none" stroke="#c4625a" stroke-width="1" stroke-dasharray="1.2 1.4"/>' +
+      '</g></g>';
   }
 
   // Áo len nhìn chính diện, gốc ở giữa gấu áo. round: thân tròn ở bụng. sleeves: vẽ hai tay áo buông xuôi.
@@ -161,12 +171,14 @@ window.NNBT = window.NNBT || {};
       '<g data-layer="hug" class="scene-layer">',
         sofa(),
         sweater(180, 202, EM, { s: 1.05, sleeves: false, rot: -12 }),
-        sweater(222, 218, ANH, { round: true, s: 1.15 }),
+        '<g class="tap-wobble">', sweater(222, 218, ANH, { round: true, s: 1.15 }), '</g>',
         hugSleeve('M156 148 Q150 184 172 198 Q196 210 216 202', [216, 202], -72),
         hugSleeve('M266 168 Q272 196 252 204 Q238 208 226 203', [226, 203], 72),
         heart(250, 128, 1.4, '#d97b6c', 'art-float art-float--1'),
         heart(268, 112, 0.95, '#e6a08f', 'art-float art-float--2'),
-        '<g opacity="0.7">', note(320, 72, 0.9, 'art-float art-float--3'), '</g>',
+        // trái tim nảy ra mỗi lần xoa bụng (nhịp "belly": [data-tap-show])
+        [[196, 150, 1.1], [262, 148, 1.2], [206, 116, 0.9], [240, 98, 1.3], [282, 120, 0.9]].map(([x, y, s], k) =>
+          '<g data-tap-show="' + (k + 1) + '">' + heart(x, y, s, k % 2 ? '#e6a08f' : '#d97b6c') + '</g>').join(''),
       '</g>',
 
       // song: hai chiếc áo len ngồi cạnh nhau, nốt nhạc bay lên từ phía chiếc áo của vợ
@@ -179,6 +191,8 @@ window.NNBT = window.NNBT || {};
         note(192, 92, 0.9, 'art-float art-float--3'),
         note(132, 80, 0.75, 'art-float art-float--1'),
         heart(214, 118, 1, '#d97b6c', 'art-float art-float--2'),
+        // dấu "cắn" hình trái tim trên chiếc áo xanh than (nhịp "bites": [data-tap-show])
+        [[228, 176, -12], [254, 168, 10], [246, 196, -4], [264, 188, 14]].map(([x, y, r], k) => biteMark(x, y, r, k + 1)).join(''),
       '</g>',
 
       // child: góc sofa ấm, hai chiếc gối tựa vào nhau, tấm chăn mỏng
