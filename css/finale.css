@@ -35,21 +35,21 @@
   gap: 14px;
   min-height: 64px;
   padding: 0.85rem 1rem;
-  border: 1.5px solid rgba(100, 84, 74, 0.35);
+  border: 1.5px solid rgba(110, 85, 96, 0.35);
   border-radius: 12px;
-  background: rgba(251, 246, 236, 0.85);
+  background: rgba(255, 249, 250, 0.85);
   cursor: pointer;
   line-height: 1.45;
   transition: border-color var(--dur-quick) var(--ease), background-color var(--dur-quick) var(--ease);
 }
-.trip__label:hover { border-color: var(--warm); background: #fffaf1; }
+.trip__label:hover { border-color: var(--warm); background: #fff8fa; }
 .trip__icon {
   flex: none;
   display: grid;
   place-items: center;
   width: 42px; height: 42px;
   border-radius: 50%;
-  border: 1.5px solid rgba(100, 84, 74, 0.35);
+  border: 1.5px solid rgba(110, 85, 96, 0.35);
   color: var(--ink-soft);
   background: var(--paper-light);
 }
@@ -58,12 +58,12 @@
 /* Đã chọn: viền đậm + dấu tích bằng hình (không chỉ dựa vào màu) */
 .trip__radio:checked + .trip__label {
   border: 2.5px solid var(--warm-deep);
-  background: #fff6ea;
+  background: #fff4f7;
 }
 .trip__radio:checked + .trip__label .trip__icon {
   background: var(--warm-deep);
   border-color: var(--warm-deep);
-  color: #fff8ef;
+  color: #fff7f9;
 }
 .trip__radio:checked + .trip__label::after {
   content: "";
@@ -76,6 +76,7 @@
 }
 .trip__radio:focus-visible + .trip__label { outline: 3px solid var(--focus); outline-offset: 3px; }
 
+.finale__lead { margin: 0 0 1.25rem; color: var(--ink-soft); }
 .finale__field { display: grid; gap: 6px; }
 .finale__field[hidden] { display: none; }
 .finale__label { font-weight: 500; }
@@ -83,9 +84,9 @@
   width: 100%;
   min-height: 48px;
   padding: 0.65rem 0.85rem;
-  border: 1.5px solid rgba(100, 84, 74, 0.45);
+  border: 1.5px solid rgba(110, 85, 96, 0.45);
   border-radius: 10px;
-  background: #fffdf8;
+  background: #fffcfd;
   color: var(--ink);
   font: inherit;
   font-size: max(16px, 1rem); /* ≥16px để iPhone không tự phóng to khi gõ */
@@ -96,7 +97,7 @@
 .finale__meta { display: flex; gap: 12px; justify-content: space-between; align-items: baseline; }
 .finale__hint { margin: 0; font-size: var(--text-small); color: var(--ink-soft); }
 .finale__counter { flex: none; font-size: var(--text-small); color: var(--ink-soft); font-variant-numeric: tabular-nums; }
-.finale__error { margin: 0; min-height: 1.5em; color: #8a3a1e; font-weight: 500; }
+.finale__error { margin: 0; min-height: 1.5em; color: #8f3a58; font-weight: 500; }
 .finale__error:empty { min-height: 0; }
 
 /* ---------- Bưu thiếp ---------- */
@@ -115,8 +116,8 @@
   aspect-ratio: 1080 / 1350;
   border-radius: 10px;
   overflow: hidden;
-  box-shadow: 0 2px 4px rgba(90, 64, 40, 0.1), 0 24px 48px -24px rgba(90, 64, 40, 0.6);
-  background: #fbf4e6;
+  box-shadow: 0 2px 4px rgba(120, 62, 88, 0.1), 0 24px 48px -24px rgba(120, 62, 88, 0.6);
+  background: #fdf3f6;
 }
 .postcard__img {
   display: block;
@@ -130,7 +131,7 @@
 .postcard__placeholder {
   position: absolute;
   inset: 0;
-  background: linear-gradient(100deg, #f4ead6 30%, #fbf4e6 50%, #f4ead6 70%) 0 0 / 300% 100%;
+  background: linear-gradient(100deg, #f8e6ec 30%, #fdf3f6 50%, #f8e6ec 70%) 0 0 / 300% 100%;
   animation: postcard-shimmer 1.6s linear infinite;
 }
 .postcard.is-ready .postcard__placeholder { display: none; }
@@ -155,15 +156,15 @@
   margin-top: 0.5rem;
   padding: clamp(1.25rem, 0.9rem + 2vw, 2.25rem) clamp(1.25rem, 0.9rem + 2vw, 2.5rem);
   background:
-    linear-gradient(rgba(255, 252, 245, 0.92), rgba(255, 252, 245, 0.92)),
-    repeating-linear-gradient(to bottom, transparent 0 2.15rem, rgba(150, 125, 95, 0.12) 2.15rem calc(2.15rem + 1px));
-  background-color: #fffaf0;
+    linear-gradient(rgba(255, 250, 251, 0.92), rgba(255, 250, 251, 0.92)),
+    repeating-linear-gradient(to bottom, transparent 0 2.15rem, rgba(180, 130, 150, 0.12) 2.15rem calc(2.15rem + 1px));
+  background-color: #fff8fa;
   border-radius: 3px 6px 4px 7px;
-  box-shadow: 0 1px 1px rgba(90, 64, 40, 0.06), 0 14px 32px -18px rgba(90, 64, 40, 0.5);
+  box-shadow: 0 1px 1px rgba(120, 62, 88, 0.06), 0 14px 32px -18px rgba(120, 62, 88, 0.5);
   font-family: var(--font-display);
-  font-size: clamp(1.2rem, 1.08rem + 0.5vw, 1.4rem);
-  line-height: 1.75;
-  color: #2f2620;
+  font-size: clamp(1.06rem, 1rem + 0.3vw, 1.18rem);
+  line-height: 1.85;
+  color: #33242c;
   animation: letter-unfold 700ms var(--ease) both;
 }
 .finale__letter-p { margin: 0 0 0.85em; }
@@ -172,8 +173,8 @@
 .finale__letter-signature {
   margin-top: 1.4em;
   text-align: right;
-  font-family: var(--font-display);
-  font-size: 1.5em;
+  font-family: var(--font-hand);
+  font-size: 1.7em;
   color: var(--warm-deep);
 }
 
@@ -195,7 +196,7 @@
 .finale__end-art { margin: 0 auto 1rem; width: 72px; height: 72px; color: var(--dawn); }
 .finale__end-svg { width: 100%; height: 100%; }
 .finale__ending {
-  font-size: clamp(1.6rem, 1.25rem + 1.6vw, 2.3rem);
+  font-size: clamp(1.3rem, 1.1rem + 0.9vw, 1.7rem);
   line-height: 1.45;
   max-width: 28rem;
   margin-inline: auto;

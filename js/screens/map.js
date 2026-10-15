@@ -86,8 +86,8 @@
     const g = NNBT.geo && NNBT.geo[layoutName];
     if (!g) return '';
     return '<g class="map__geo">' +
-      '<path d="' + g.d + '" fill="#e8d8b8" opacity="0.5"/>' +
-      '<path d="' + g.d + '" fill="none" stroke="#b49a76" stroke-width="1" vector-effect="non-scaling-stroke" opacity="0.45"/>' +
+      '<path d="' + g.d + '" fill="#f7dde5" opacity="0.75"/>' +
+      '<path d="' + g.d + '" fill="none" stroke="#d6a7b7" stroke-width="1" vector-effect="non-scaling-stroke" opacity="0.7"/>' +
       '</g>';
   }
 
@@ -126,9 +126,10 @@
 
     return (
       '<svg class="map__terrain" viewBox="0 0 ' + layout.w + ' ' + layout.h + '" preserveAspectRatio="none" role="img" aria-label="' + mapAlt + '">' +
-        '<rect width="' + layout.w + '" height="' + layout.h + '" fill="#e3ecea" opacity="0.55"/>' +
+        '<defs><filter id="map-soft" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="' + Math.round(Math.min(layout.w, layout.h) * 0.045) + '"/></filter></defs>' +
+        '<rect width="' + layout.w + '" height="' + layout.h + '" fill="#ecebf7" opacity="0.6"/>' +
         geoBackdrop(layoutName) +
-        '<g filter="url(#wc-wash)">' + washes + '</g>' +
+        '<g filter="url(#map-soft)" opacity="0.75">' + washes + '</g>' +
         '<g class="map__rain" stroke="var(--mist)" stroke-width="2" stroke-linecap="round" opacity="0.45">' + rain + '</g>' +
         '<g fill="none" stroke-linecap="round">' + path + '</g>' +
       '</svg>'

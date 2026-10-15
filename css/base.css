@@ -1,34 +1,34 @@
 /*
  * base.css — Màu, font, nền giấy, nút, thông báo và các quy tắc dùng chung.
  *
- * Font: "Be Vietnam Pro" và "Charm" được lưu kèm dự án (khai báo trong css/fonts.css).
+ * Font: "Be Vietnam Pro" (chữ thường), "Lora" (tiêu đề, câu hỏi, lá thư) và "Charm" (chỉ cho chữ ký)
  * Nếu tệp font không tải được, trình duyệt rơi xuống font hệ thống có hỗ trợ tiếng Việt
  * (Segoe UI, SF Pro, Roboto, Georgia, Palatino, Noto Serif…).
  */
 
 :root {
   /* Giấy & mực */
-  --paper: #f4ecdc;
-  --paper-light: #fbf6ec;
-  --paper-edge: #e6d8bd;
-  --ink: #3a2e27;          /* chữ chính — tương phản ~11:1 trên nền giấy */
-  --ink-soft: #64544a;     /* chữ phụ — tương phản ~6:1 */
-  --ink-faint: #8a7768;    /* chỉ dùng cho trang trí, không dùng cho chữ cần đọc */
+  --paper: #fbeef1;
+  --paper-light: #fffafb;
+  --paper-edge: #f0d5dc;
+  --ink: #3d2a33;          /* chữ chính — tương phản ~11:1 trên nền giấy */
+  --ink-soft: #6e5560;     /* chữ phụ — tương phản ~6:1 */
+  --ink-faint: #a88d98;    /* chỉ dùng cho trang trí, không dùng cho chữ cần đọc */
 
-  /* Bảng màu câu chuyện: ấm (bên nhau) · xanh dịu (khoảng cách) · vàng bình minh (tương lai) */
-  --warm: #c9774f;
-  --warm-deep: #9c4f2d;    /* nền nút chính — chữ sáng trên nền này đạt 5.6:1 */
-  --wash-warm: #e7a583;
-  --mist: #5f8798;
-  --wash-mist: #9dbfcf;
-  --dawn: #b98a2a;
-  --wash-dawn: #ecbf5f;
+  /* Bảng màu câu chuyện (hồng pastel): hồng (bên nhau) · tím oải hương dịu (khoảng cách) · vàng đào (tương lai) */
+  --warm: #e58fa3;
+  --warm-deep: #a94d6b;    /* nền nút chính — chữ sáng trên nền này đạt 5.6:1 */
+  --wash-warm: #f5b8c4;
+  --mist: #7b8fb3;
+  --wash-mist: #c9d3ee;
+  --dawn: #c69a3c;
+  --wash-dawn: #f6d38f;
 
-  --focus: #2b5a70;
+  --focus: #5a4a8a;
 
   /* Font */
   --font-body: "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-  --font-display: "Charm", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, "Noto Serif", "Times New Roman", serif;
+  --font-display: "Lora", Georgia, "Noto Serif", "Palatino Linotype", "Times New Roman", serif;
 
   /* Cỡ chữ co giãn theo màn hình */
   --text-base: clamp(1.0625rem, 1rem + 0.3vw, 1.1875rem);
@@ -38,7 +38,7 @@
   --measure: 36rem;
 
   --radius-page: 6px 10px 8px 12px;
-  --shadow-page: 0 1px 2px rgba(90, 64, 40, 0.08), 0 18px 40px -22px rgba(90, 64, 40, 0.45);
+  --shadow-page: 0 1px 2px rgba(120, 62, 88, 0.08), 0 18px 40px -22px rgba(120, 62, 88, 0.45);
 
   --dur-screen: 450ms;   /* khớp với TRANSITION_MS trong js/engine.js */
   --dur-quick: 180ms;
@@ -70,7 +70,8 @@ body {
   overflow-x: hidden;
 }
 
-/* Nền giấy: hạt mịn + mảng loang lớn + viền tối nhẹ. Đặt ở lớp cố định để không vẽ lại khi cuộn. */
+/* Nền: hồng pastel mịn — vài quầng màu rất nhẹ (hồng, đào, oải hương) + hạt mịn gần như không thấy.
+   Đặt ở lớp cố định để không vẽ lại khi cuộn. */
 body::before {
   content: "";
   position: fixed;
@@ -78,16 +79,17 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background-image:
-    radial-gradient(ellipse at 50% 40%, rgba(255, 250, 240, 0.55) 0%, rgba(255, 250, 240, 0) 60%),
-    radial-gradient(ellipse at 50% 50%, rgba(0, 0, 0, 0) 55%, rgba(120, 88, 52, 0.16) 100%),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='480' height='480'%3E%3Cfilter id='b'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.012' numOctaves='3' seed='5'/%3E%3CfeColorMatrix values='0 0 0 0 .55 0 0 0 0 .42 0 0 0 0 .26 0 0 0 .16 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23b)'/%3E%3C/svg%3E"),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .4 0 0 0 0 .3 0 0 0 0 .2 0 0 0 .11 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
-  background-size: 100% 100%, 100% 100%, 480px 480px, 220px 220px;
+    radial-gradient(60% 50% at 12% 8%, rgba(255, 214, 226, 0.75) 0%, rgba(255, 214, 226, 0) 70%),
+    radial-gradient(50% 45% at 92% 18%, rgba(255, 226, 210, 0.6) 0%, rgba(255, 226, 210, 0) 70%),
+    radial-gradient(55% 50% at 85% 95%, rgba(226, 216, 246, 0.55) 0%, rgba(226, 216, 246, 0) 70%),
+    radial-gradient(50% 45% at 8% 92%, rgba(255, 220, 232, 0.55) 0%, rgba(255, 220, 232, 0) 70%),
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 .6 0 0 0 0 .35 0 0 0 0 .45 0 0 0 .05 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-size: 100% 100%, 100% 100%, 100% 100%, 100% 100%, 220px 220px;
 }
-
 h1, h2, h3 {
   font-family: var(--font-display);
-  font-weight: 400;
+  font-weight: 600;
+  letter-spacing: -0.005em;
   line-height: 1.25;
   margin: 0 0 0.5em;
   color: var(--ink);
@@ -156,9 +158,9 @@ button { font: inherit; color: inherit; }
   gap: 6px;
   min-height: 44px;
   padding: 0 14px 0 10px;
-  border: 1px solid rgba(100, 84, 74, 0.28);
+  border: 1px solid rgba(110, 85, 96, 0.28);
   border-radius: 999px;
-  background: rgba(251, 246, 236, 0.86);
+  background: rgba(255, 249, 250, 0.86);
   color: var(--ink-soft);
   font-size: var(--text-small);
   cursor: pointer;
@@ -174,7 +176,7 @@ button { font: inherit; color: inherit; }
 #btn-sound .icon-sound-on { display: none; }
 #btn-sound.is-on .icon-sound-on { display: inline; }
 #btn-sound.is-on .icon-sound-off { display: none; }
-#btn-sound.is-on { color: var(--warm-deep); border-color: rgba(156, 79, 45, 0.45); }
+#btn-sound.is-on { color: var(--warm-deep); border-color: rgba(169, 77, 107, 0.45); }
 
 /* ---------- Nút ---------- */
 
@@ -201,14 +203,14 @@ button { font: inherit; color: inherit; }
 
 .btn--primary {
   background: var(--warm-deep);
-  color: #fff8ef;
-  box-shadow: 0 6px 16px -10px rgba(156, 79, 45, 0.9);
+  color: #fff7f9;
+  box-shadow: 0 6px 16px -10px rgba(169, 77, 107, 0.9);
 }
-.btn--primary:hover:not(:disabled) { background: #87411f; }
+.btn--primary:hover:not(:disabled) { background: #93405f; }
 
 .btn--secondary {
-  background: rgba(251, 246, 236, 0.7);
-  border-color: rgba(100, 84, 74, 0.5);
+  background: rgba(255, 249, 250, 0.7);
+  border-color: rgba(110, 85, 96, 0.5);
   color: var(--ink);
 }
 .btn--secondary:hover:not(:disabled) { background: var(--paper-light); border-color: var(--ink-soft); }
@@ -217,7 +219,7 @@ button { font: inherit; color: inherit; }
   background: transparent;
   color: var(--ink-soft);
   text-decoration: underline;
-  text-decoration-color: rgba(100, 84, 74, 0.4);
+  text-decoration-color: rgba(110, 85, 96, 0.4);
   text-underline-offset: 4px;
   min-height: 44px;
   padding-inline: 0.75rem;
@@ -228,7 +230,7 @@ button { font: inherit; color: inherit; }
 .btn:disabled {
   cursor: not-allowed;
   background: transparent;
-  border: 1.5px dashed rgba(100, 84, 74, 0.45);
+  border: 1.5px dashed rgba(110, 85, 96, 0.45);
   color: var(--ink-soft);
   box-shadow: none;
 }
@@ -250,18 +252,18 @@ button { font: inherit; color: inherit; }
 .toast {
   padding: 0.75rem 1rem;
   border-radius: 10px;
-  background: #3a2e27;
-  color: #fbf6ec;
+  background: #3d2a33;
+  color: #fffafb;
   font-size: var(--text-small);
   line-height: 1.5;
-  box-shadow: 0 10px 30px -12px rgba(40, 28, 20, 0.6);
+  box-shadow: 0 10px 30px -12px rgba(60, 30, 45, 0.6);
   opacity: 0;
   transform: translateY(8px);
   transition: opacity 300ms var(--ease), transform 300ms var(--ease);
 }
 .toast.is-visible { opacity: 1; transform: none; }
-.toast--warn { background: #5b4426; }
-.toast--error { background: #6d2f22; }
+.toast--warn { background: #6a4256; }
+.toast--error { background: #7a2e4b; }
 
 /* ---------- Hộp xác nhận ---------- */
 
@@ -274,7 +276,7 @@ button { font: inherit; color: inherit; }
   color: var(--ink);
   box-shadow: var(--shadow-page);
 }
-.dialog::backdrop { background: rgba(58, 46, 39, 0.38); }
+.dialog::backdrop { background: rgba(61, 42, 51, 0.38); }
 .dialog__title { font-size: var(--text-heading); }
 .dialog__body { color: var(--ink-soft); }
 .dialog__actions { display: flex; flex-wrap: wrap; gap: 10px; justify-content: flex-end; margin-top: 1.25rem; }
@@ -304,7 +306,7 @@ button { font: inherit; color: inherit; }
   padding: 10px 12px 8px;
   border-radius: var(--radius-page);
   background: var(--paper-light);
-  box-shadow: 0 10px 28px -14px rgba(60, 40, 20, 0.45), 0 0 0 1px rgba(138, 119, 104, 0.18);
+  box-shadow: 0 10px 28px -14px rgba(110, 55, 80, 0.45), 0 0 0 1px rgba(176, 138, 152, 0.18);
   transform: rotate(1.2deg);
 }
 .music-card__head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }

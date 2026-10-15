@@ -40,7 +40,7 @@
   width: 100%;
   max-width: 44rem;
   padding: clamp(1.5rem, 1rem + 3vw, 3rem);
-  background: rgba(251, 246, 236, 0.88);
+  background: rgba(255, 249, 250, 0.88);
   border-radius: var(--radius-page);
   box-shadow: var(--shadow-page);
 }
@@ -50,7 +50,7 @@
   content: "";
   position: absolute;
   inset: 8px;
-  border: 1px solid rgba(138, 119, 104, 0.22);
+  border: 1px solid rgba(176, 138, 152, 0.22);
   border-radius: 4px 8px 6px 10px;
   pointer-events: none;
 }
@@ -71,16 +71,16 @@
   display: inline-block;
   margin: 0 0 1rem;
   padding: 0.15rem 0.75rem;
-  border: 1px solid rgba(95, 135, 152, 0.6);
+  border: 1px solid rgba(123, 143, 179, 0.6);
   border-radius: 999px;
   font-size: var(--text-small);
-  color: #3f6676;
-  background: rgba(157, 191, 207, 0.18);
+  color: #5d5a8f;
+  background: rgba(201, 211, 238, 0.18);
 }
 
 .placeholder-note {
   padding: 0.85rem 1rem;
-  border: 1.5px dashed rgba(100, 84, 74, 0.35);
+  border: 1.5px dashed rgba(110, 85, 96, 0.35);
   border-radius: 8px;
   color: var(--ink-soft);
   font-size: var(--text-small);
@@ -135,7 +135,7 @@
     position: absolute;
     top: 8px; bottom: 8px; left: 50%;
     width: 1px;
-    background: linear-gradient(to bottom, transparent, rgba(138, 119, 104, 0.25), transparent);
+    background: linear-gradient(to bottom, transparent, rgba(176, 138, 152, 0.25), transparent);
   }
   .cover__art { width: 100%; max-width: 360px; }
   .page--cover .actions--stack { margin-inline: 0; }
@@ -166,14 +166,14 @@
 }
 
 .memory__link {
-  border: 1.5px solid rgba(100, 84, 74, 0.35);
-  background: rgba(251, 246, 236, 0.75);
+  border: 1.5px solid rgba(110, 85, 96, 0.35);
+  background: rgba(255, 249, 250, 0.75);
   cursor: pointer;
   transition: background-color var(--dur-quick) var(--ease), border-color var(--dur-quick) var(--ease);
 }
-.memory__link:hover { background: #fffaf1; border-color: var(--warm); }
+.memory__link:hover { background: #fff8fa; border-color: var(--warm); }
 
-.memory__locked { border: 1.5px dashed rgba(100, 84, 74, 0.3); }
+.memory__locked { border: 1.5px dashed rgba(110, 85, 96, 0.3); }
 
 .memory__label  { grid-area: label; font-size: var(--text-small); color: var(--ink-soft); }
 .memory__title  { grid-area: title; font-family: var(--font-display); font-size: 1.15rem; line-height: 1.35; }
@@ -184,7 +184,7 @@
 
 /* Câu chữ chờ duyệt */
 .is-debug [data-draft="true"] {
-  outline: 1.5px dashed #b4552f;
+  outline: 1.5px dashed #b4546f;
   outline-offset: 3px;
 }
 .is-debug [data-draft="true"]::before {
@@ -193,7 +193,7 @@
   margin-bottom: 2px;
   font: 600 11px/1.4 var(--font-body);
   letter-spacing: 0.04em;
-  color: #9c4f2d;
+  color: #a94d6b;
 }
 .is-debug .story-hint[data-draft="true"]::before { content: "NHÁP – cần duyệt"; }
 
@@ -202,11 +202,11 @@
   margin-top: 1.25rem;
   padding: 0.75rem 1rem;
   border-radius: 8px;
-  background: rgba(157, 191, 207, 0.16);
+  background: rgba(201, 211, 238, 0.16);
   font-size: var(--text-small);
   color: var(--ink-soft);
 }
-.story-alt__label { margin: 0 0 0.25rem; font-weight: 500; color: #3f6676; }
+.story-alt__label { margin: 0 0 0.25rem; font-weight: 500; color: #5d5a8f; }
 .story-alt__p { margin: 0; }
 
 .debug {
@@ -219,8 +219,8 @@
   overflow: auto;
   padding: 8px 12px;
   border-radius: 8px;
-  background: rgba(30, 24, 20, 0.88);
-  color: #f4ecdc;
+  background: rgba(60, 30, 45, 0.88);
+  color: #fbeef1;
   font: 12px/1.45 ui-monospace, Consolas, monospace;
 }
 .debug summary { cursor: pointer; }

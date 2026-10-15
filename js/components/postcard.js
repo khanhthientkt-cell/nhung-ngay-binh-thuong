@@ -1,13 +1,17 @@
 /*
  * postcard.js — Vẽ bưu thiếp bằng Canvas 2D (không chụp DOM, không thư viện ngoài).
  *
+ * Nội dung bưu thiếp: tranh đêm cực quang (hộp nhẫn trên đồi tuyết, hai hàng dấu chân),
+ * tên Chương 5, LỜI CHÚC CỦA ANH và (nếu có) LỜI NHẮN CỦA EM. Tông hồng pastel.
+ *
  * Vì sao Canvas thay vì chụp DOM:
  *   - Kiểm soát được font tiếng Việt: chờ font tải xong (document.fonts.load) rồi mới vẽ.
  *   - Không dùng ảnh/SVG ngoài → canvas không bị "tainted", toBlob luôn xuất được ảnh.
  *   - Ảnh xuất ra giống hệt bản xem trước trên mọi máy.
  *
  * API:
- *   NNBT.postcard.render(canvas, { trip, tripLine, place, message, texts }) → Promise<canvas>
+ *   NNBT.postcard.render(canvas, { wish, message, texts }) → Promise<canvas>
+ *     texts: { heading, wishHeading, messageHeading, footer, stampDate }
  *   NNBT.postcard.toBlob(canvas) → Promise<Blob>
  *   NNBT.postcard.SIZE = { w, h }
  */
@@ -19,13 +23,13 @@ window.NNBT = window.NNBT || {};
   const W = 1080;
   const H = 1350;
   const FONT_BODY = '"Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif';
-  const FONT_HAND = '"Charm", "Palatino Linotype", Palatino, Georgia, "Noto Serif", serif';
+  const FONT_SERIF = '"Lora", Georgia, "Noto Serif", serif';
+  const FONT_HAND = '"Charm", "Lora", Georgia, serif';
 
-  const INK = '#3a2e27';
-  const INK_SOFT = '#64544a';
-  const WARM_DEEP = '#9c4f2d';
-
-  const STAMP_COLORS = { slow: '#d98a63', new: '#7aa39a', aurora: '#3f6c8a', custom: '#c9a24f' };
+  const INK = '#3d2a33';
+  const INK_SOFT = '#6e5560';
+  const ROSE = '#a94d6b';
+  const LINE = '#f0d5dc';
 
   // ---------- Tiện ích ----------
 
@@ -47,23 +51,6 @@ window.NNBT = window.NNBT || {};
     ctx.closePath();
   }
 
-  // Mảng màu loang: vài hình elip trong suốt chồng lệch nhau
-  function wash(ctx, rand, x, y, rx, ry, color, alpha) {
-    ctx.save();
-    ctx.fillStyle = color;
-    for (let i = 0; i < 5; i++) {
-      ctx.globalAlpha = alpha * (0.28 + 0.2 * rand());
-      ctx.beginPath();
-      ctx.ellipse(
-        x + (rand() - 0.5) * rx * 0.3, y + (rand() - 0.5) * ry * 0.3,
-        rx * (0.82 + 0.3 * rand()), ry * (0.82 + 0.3 * rand()),
-        (rand() - 0.5) * 0.5, 0, Math.PI * 2
-      );
-      ctx.fill();
-    }
-    ctx.restore();
-  }
-
   // Ngắt dòng theo độ rộng; từ quá dài thì cắt theo ký tự.
   function wrap(ctx, text, maxW) {
     const lines = [];
@@ -81,7 +68,6 @@ window.NNBT = window.NNBT || {};
           line = word;
           return;
         }
-        // Từ dài hơn cả dòng
         let chunk = '';
         Array.from(word).forEach((ch) => {
           if (ctx.measureText(chunk + ch).width > maxW) {
@@ -98,7 +84,7 @@ window.NNBT = window.NNBT || {};
 
   function ellipsize(ctx, text, maxW) {
     if (ctx.measureText(text).width <= maxW) return text;
-    let t = Array.from(text);
+    const t = Array.from(text);
     while (t.length && ctx.measureText(t.join('') + '…').width > maxW) t.pop();
     return t.join('') + '…';
   }
@@ -107,277 +93,14 @@ window.NNBT = window.NNBT || {};
   function ensureFonts(sample) {
     if (!document.fonts || !document.fonts.load) return Promise.resolve();
     const loads = [
-      document.fonts.load('400 66px "Charm"', sample),
-      document.fonts.load('400 34px "Be Vietnam Pro"', sample),
+      document.fonts.load('600 56px "Lora"', sample),
+      document.fonts.load('italic 400 32px "Lora"', sample),
+      document.fonts.load('400 34px "Lora"', sample),
+      document.fonts.load('400 40px "Charm"', '20·10'),
       document.fonts.load('500 24px "Be Vietnam Pro"', sample)
     ];
     const timeout = new Promise((resolve) => setTimeout(resolve, 3000));
     return Promise.race([Promise.all(loads), timeout]).catch(() => {});
-  }
-
-  // ---------- Tranh theo kiểu chuyến đi (vẽ trong khung w×h) ----------
-
-  const ART = {
-    // Một chuyến đi thật chậm: con đường chiều, cây, bàn cà phê với hai chiếc ly
-    slow(ctx, w, h, rand) {
-      let g = ctx.createLinearGradient(0, 0, 0, h);
-      g.addColorStop(0, '#f8d6ab');
-      g.addColorStop(0.6, '#fbeedd');
-      g.addColorStop(1, '#f3dcc0');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, w, h);
-      g = ctx.createRadialGradient(700, 150, 10, 700, 150, 190);
-      g.addColorStop(0, 'rgba(255,227,160,0.95)');
-      g.addColorStop(1, 'rgba(255,227,160,0)');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, w, h);
-      wash(ctx, rand, 220, 330, 330, 90, '#e2a982', 0.9);
-      wash(ctx, rand, 720, 340, 380, 100, '#ebbf98', 0.9);
-      ctx.fillStyle = '#f1d9bb';
-      ctx.fillRect(0, 350, w, h - 350);
-      // con đường uốn
-      ctx.save();
-      ctx.lineCap = 'round';
-      ctx.strokeStyle = 'rgba(250,238,215,0.95)';
-      ctx.lineWidth = 78;
-      ctx.beginPath();
-      ctx.moveTo(360, h + 20);
-      ctx.bezierCurveTo(420, 520, 640, 470, 560, 400);
-      ctx.bezierCurveTo(500, 350, 470, 340, 520, 320);
-      ctx.stroke();
-      ctx.strokeStyle = '#ddb98d';
-      ctx.lineWidth = 3;
-      ctx.setLineDash([14, 16]);
-      ctx.stroke();
-      ctx.restore();
-      // cây
-      wash(ctx, rand, 150, 400, 90, 120, '#a9bd8d', 1);
-      wash(ctx, rand, 860, 380, 80, 110, '#b3c597', 1);
-      ctx.strokeStyle = '#7d5a3f';
-      ctx.lineWidth = 6;
-      ctx.beginPath(); ctx.moveTo(150, 470); ctx.lineTo(150, 540); ctx.moveTo(860, 450); ctx.lineTo(860, 520); ctx.stroke();
-      // bàn cà phê, hai chiếc ly
-      ctx.fillStyle = '#a97a52';
-      ctx.beginPath(); ctx.ellipse(730, 540, 140, 28, 0, 0, Math.PI * 2); ctx.fill();
-      ctx.fillStyle = '#8a6040';
-      ctx.fillRect(722, 560, 16, 50);
-      [[690, '#b5784d'], [770, '#e2bf7a']].forEach(([x, drink]) => {
-        ctx.fillStyle = 'rgba(245,249,248,0.9)';
-        ctx.beginPath(); ctx.moveTo(x - 22, 470); ctx.lineTo(x + 22, 470); ctx.lineTo(x + 17, 532); ctx.lineTo(x - 17, 532); ctx.closePath(); ctx.fill();
-        ctx.fillStyle = drink;
-        ctx.beginPath(); ctx.moveTo(x - 20, 490); ctx.lineTo(x + 20, 490); ctx.lineTo(x + 17, 530); ctx.lineTo(x - 17, 530); ctx.closePath(); ctx.fill();
-        ctx.strokeStyle = 'rgba(160,130,100,0.5)';
-        ctx.lineWidth = 3;
-        ctx.beginPath(); ctx.moveTo(x - 6, 455); ctx.bezierCurveTo(x - 16, 440, x + 4, 430, x - 6, 412); ctx.stroke();
-      });
-    },
-
-    // Một nơi mới: tấm bản đồ mở ra, đường chấm dẫn tới một ngôi sao
-    new(ctx, w, h, rand) {
-      let g = ctx.createLinearGradient(0, 0, 0, h);
-      g.addColorStop(0, '#d7e6e2');
-      g.addColorStop(1, '#eef3ec');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, w, h);
-      ctx.fillStyle = 'rgba(160,188,180,0.7)';
-      [[120, 300, 160], [330, 290, 210], [600, 300, 180], [830, 280, 220]].forEach(([x, base, hh]) => {
-        ctx.beginPath(); ctx.moveTo(x - hh, base); ctx.lineTo(x, base - hh * 0.8); ctx.lineTo(x + hh, base); ctx.closePath(); ctx.fill();
-      });
-      wash(ctx, rand, 476, 300, 520, 60, '#f4f7f2', 1);
-      // bản đồ gấp ba
-      const panels = [['#f7eedb', [[226, 330], [386, 300], [386, 560], [226, 590]]],
-        ['#ecdcc0', [[386, 300], [566, 330], [566, 590], [386, 560]]],
-        ['#f7eedb', [[566, 330], [726, 300], [726, 560], [566, 590]]]];
-      panels.forEach(([c, pts]) => {
-        ctx.fillStyle = c;
-        ctx.beginPath(); pts.forEach(([x, y], i) => (i ? ctx.lineTo(x, y) : ctx.moveTo(x, y))); ctx.closePath(); ctx.fill();
-      });
-      wash(ctx, rand, 330, 470, 80, 50, '#cfe0c4', 0.9);
-      wash(ctx, rand, 640, 420, 70, 60, '#cfe0c4', 0.9);
-      ctx.save();
-      ctx.strokeStyle = WARM_DEEP;
-      ctx.lineWidth = 5;
-      ctx.lineCap = 'round';
-      ctx.setLineDash([2, 16]);
-      ctx.beginPath(); ctx.moveTo(260, 540); ctx.bezierCurveTo(360, 420, 470, 560, 560, 450); ctx.bezierCurveTo(610, 390, 640, 400, 660, 380); ctx.stroke();
-      ctx.restore();
-      star(ctx, 670, 372, 26, 11, '#e9b85c');
-      // la bàn
-      ctx.strokeStyle = '#6f8e86'; ctx.lineWidth = 3;
-      ctx.beginPath(); ctx.arc(830, 120, 48, 0, Math.PI * 2); ctx.stroke();
-      ctx.fillStyle = '#9c4f2d';
-      ctx.beginPath(); ctx.moveTo(830, 78); ctx.lineTo(842, 120); ctx.lineTo(818, 120); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#6f8e86';
-      ctx.beginPath(); ctx.moveTo(830, 162); ctx.lineTo(842, 120); ctx.lineTo(818, 120); ctx.closePath(); ctx.fill();
-    },
-
-    // Dưới bầu trời cực quang: trời đêm, dải cực quang, chiếc lều sáng ấm trên đồi tuyết,
-    // hai hàng dấu chân đi cạnh nhau dẫn tới lều (tĩnh vật — không vẽ người)
-    aurora(ctx, w, h, rand) {
-      const k = h / 740; // tranh thấp lại khi có lời nhắn → co theo chiều cao
-      const hy = Math.round(h * 0.6);
-      let g = ctx.createLinearGradient(0, 0, 0, h);
-      g.addColorStop(0, '#0e1f33');
-      g.addColorStop(1, '#2a4a63');
-      ctx.fillStyle = g;
-      ctx.fillRect(0, 0, w, h);
-      for (let i = 0; i < 140; i++) {
-        ctx.globalAlpha = 0.35 + 0.6 * rand();
-        ctx.fillStyle = '#f3f6ff';
-        ctx.beginPath(); ctx.arc(rand() * w, rand() * hy * 0.95, 0.8 + rand() * 1.8, 0, Math.PI * 2); ctx.fill();
-      }
-      ctx.globalAlpha = 1;
-      ctx.save();
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.lineCap = 'round';
-      [[90, 170 * k, 0.5], [70, 240 * k, 0.4], [110, 120 * k, 0.3]].forEach(([lw, y0, a]) => {
-        const lg = ctx.createLinearGradient(0, 0, w, 0);
-        lg.addColorStop(0, 'rgba(110,230,180,0)');
-        lg.addColorStop(0.35, 'rgba(110,230,180,' + a + ')');
-        lg.addColorStop(0.7, 'rgba(140,170,250,' + a * 0.8 + ')');
-        lg.addColorStop(1, 'rgba(140,170,250,0)');
-        ctx.strokeStyle = lg;
-        ctx.lineWidth = lw;
-        ctx.shadowColor = 'rgba(110,230,180,0.6)';
-        ctx.shadowBlur = 40;
-        ctx.beginPath();
-        ctx.moveTo(-40, y0 + 60);
-        ctx.bezierCurveTo(240, y0 - 80, 520, y0 + 110, 980, y0 - 40);
-        ctx.stroke();
-      });
-      ctx.restore();
-      // dãy đồi xa với vài cây thông
-      ctx.fillStyle = '#1f3a52';
-      ctx.beginPath(); ctx.moveTo(0, hy - 36 * k); ctx.bezierCurveTo(220, hy - 90 * k, 520, hy - 20 * k, w, hy - 70 * k); ctx.lineTo(w, hy + 40); ctx.lineTo(0, hy + 40); ctx.closePath(); ctx.fill();
-      ctx.fillStyle = '#152c40';
-      [[60, 1], [96, 0.75], [128, 0.9], [812, 0.8], [850, 1.1], [892, 0.7]].forEach(([x, s]) => {
-        const th = 70 * s * k;
-        const by = hy - 30 * k;
-        ctx.beginPath(); ctx.moveTo(x, by - th); ctx.lineTo(x - th * 0.32, by); ctx.lineTo(x + th * 0.32, by); ctx.closePath(); ctx.fill();
-      });
-      // đồi tuyết phía trước, sáng nhẹ dưới cực quang
-      const ridge = (c) => { c.moveTo(0, hy + 10); c.bezierCurveTo(260, hy - 50 * k, 600, hy - 40 * k, w, hy + 20); };
-      g = ctx.createLinearGradient(0, hy - 50 * k, 0, h);
-      g.addColorStop(0, '#7f9fb6');
-      g.addColorStop(1, '#3b5872');
-      ctx.fillStyle = g;
-      ctx.beginPath(); ridge(ctx); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
-      ctx.strokeStyle = 'rgba(200,240,225,0.55)'; ctx.lineWidth = 4;
-      ctx.beginPath(); ridge(ctx); ctx.stroke();
-
-      // chiếc lều sáng ấm
-      const tx = w * 0.64;
-      const ty = hy + (h - hy) * 0.34;
-      const ts = Math.max(0.65, k);
-      const tw = 132 * ts;
-      const th = 156 * ts;
-      let glow = ctx.createRadialGradient(tx, ty - th * 0.3, 10, tx, ty - th * 0.3, 260 * ts);
-      glow.addColorStop(0, 'rgba(255,205,130,0.55)');
-      glow.addColorStop(1, 'rgba(255,205,130,0)');
-      ctx.fillStyle = glow;
-      ctx.fillRect(tx - 300, ty - th - 200, 600, 520);
-      // vệt sáng hắt ra tuyết trước cửa lều
-      ctx.fillStyle = 'rgba(255,214,150,0.35)';
-      ctx.beginPath(); ctx.ellipse(tx, ty + 14 * ts, tw * 0.9, 18 * ts, 0, 0, Math.PI * 2); ctx.fill();
-      // dây néo
-      ctx.strokeStyle = 'rgba(30,45,60,0.6)'; ctx.lineWidth = 2;
-      ctx.beginPath(); ctx.moveTo(tx, ty - th); ctx.lineTo(tx - tw * 1.55, ty + 6); ctx.moveTo(tx, ty - th); ctx.lineTo(tx + tw * 1.55, ty + 6); ctx.stroke();
-      // thân lều
-      let tg = ctx.createLinearGradient(tx - tw, 0, tx + tw, 0);
-      tg.addColorStop(0, '#d98a4f');
-      tg.addColorStop(0.5, '#efb06c');
-      tg.addColorStop(1, '#b8692f');
-      ctx.fillStyle = tg;
-      ctx.beginPath(); ctx.moveTo(tx - tw, ty); ctx.quadraticCurveTo(tx - tw * 0.45, ty - th * 0.45, tx, ty - th); ctx.quadraticCurveTo(tx + tw * 0.45, ty - th * 0.45, tx + tw, ty); ctx.closePath(); ctx.fill();
-      // cửa lều sáng
-      ctx.fillStyle = '#ffe3a8';
-      ctx.beginPath(); ctx.moveTo(tx - tw * 0.36, ty); ctx.quadraticCurveTo(tx - tw * 0.12, ty - th * 0.36, tx, ty - th * 0.7); ctx.quadraticCurveTo(tx + tw * 0.12, ty - th * 0.36, tx + tw * 0.36, ty); ctx.closePath(); ctx.fill();
-      // vạt cửa vén sang một bên
-      ctx.fillStyle = '#a95f2a';
-      ctx.beginPath(); ctx.moveTo(tx, ty - th * 0.7); ctx.quadraticCurveTo(tx + tw * 0.2, ty - th * 0.3, tx + tw * 0.46, ty); ctx.lineTo(tx + tw * 0.34, ty); ctx.quadraticCurveTo(tx + tw * 0.14, ty - th * 0.34, tx, ty - th * 0.7); ctx.closePath(); ctx.fill();
-      // cọc chóp lều
-      ctx.strokeStyle = '#4a3020'; ctx.lineWidth = 4; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(tx - 8 * ts, ty - th - 14 * ts); ctx.lineTo(tx + 3, ty - th + 6); ctx.moveTo(tx + 8 * ts, ty - th - 14 * ts); ctx.lineTo(tx - 3, ty - th + 6); ctx.stroke();
-      // tuyết đọng chân lều
-      ctx.fillStyle = 'rgba(225,238,245,0.85)';
-      ctx.beginPath(); ctx.ellipse(tx - tw * 0.7, ty + 2, tw * 0.34, 7 * ts, 0, 0, Math.PI * 2); ctx.ellipse(tx + tw * 0.75, ty + 2, tw * 0.3, 6 * ts, 0, 0, Math.PI * 2); ctx.fill();
-
-      // hai hàng dấu chân đi cạnh nhau, từ phía trước dẫn tới cửa lều (gần to, xa nhỏ)
-      const p0 = [w * 0.2, h + 20];
-      const p1 = [w * 0.34, ty + (h - ty) * 0.35];
-      const p2 = [tx - tw * 0.1, ty + 16 * ts];
-      const at = (t) => [
-        (1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0],
-        (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]
-      ];
-      ctx.fillStyle = 'rgba(28,52,76,0.5)';
-      const steps = 15;
-      for (let i = 1; i < steps; i++) {
-        const t = i / steps;
-        const [x, y] = at(t);
-        const [x2, y2] = at(Math.min(1, t + 0.01));
-        const ang = Math.atan2(y2 - y, x2 - x);
-        const s = 1 - t * 0.68;
-        const nx = -Math.sin(ang);
-        const ny = Math.cos(ang);
-        [-1, 1].forEach((trail) => {
-          const side = (i % 2 ? 1 : -1) * 6 * s;
-          const off = trail * 24 * s + side;
-          ctx.beginPath();
-          ctx.ellipse(x + nx * off, y + ny * off, 11 * s, 5 * s, ang, 0, Math.PI * 2);
-          ctx.fill();
-        });
-      }
-    },
-
-    // Nơi em tự chọn: bản đồ giấy, đường chấm, chiếc ghim và tên địa điểm
-    custom(ctx, w, h, rand, data) {
-      ctx.fillStyle = '#f4ead6';
-      ctx.fillRect(0, 0, w, h);
-      ctx.strokeStyle = 'rgba(200,180,145,0.35)';
-      ctx.lineWidth = 2;
-      for (let x = 48; x < w; x += 64) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, h); ctx.stroke(); }
-      for (let y = 48; y < h; y += 64) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(w, y); ctx.stroke(); }
-      wash(ctx, rand, 260, 420, 230, 140, '#e6d2ab', 1);
-      wash(ctx, rand, 690, 260, 260, 150, '#e6d2ab', 1);
-      wash(ctx, rand, 760, 480, 120, 70, '#cfdcc0', 0.9);
-      ctx.save();
-      ctx.strokeStyle = WARM_DEEP; ctx.lineWidth = 5; ctx.lineCap = 'round'; ctx.setLineDash([2, 16]);
-      ctx.beginPath(); ctx.moveTo(110, 540); ctx.bezierCurveTo(260, 420, 420, 520, 520, 380); ctx.bezierCurveTo(560, 320, 590, 300, 610, 292); ctx.stroke();
-      ctx.restore();
-      // ghim
-      ctx.fillStyle = '#c9774f';
-      ctx.beginPath(); ctx.moveTo(620, 290); ctx.bezierCurveTo(580, 240, 585, 190, 620, 186); ctx.bezierCurveTo(655, 190, 660, 240, 620, 290); ctx.fill();
-      ctx.fillStyle = '#fbf4e6';
-      ctx.beginPath(); ctx.arc(620, 222, 14, 0, Math.PI * 2); ctx.fill();
-      if (data.place) {
-        ctx.font = '500 30px ' + FONT_BODY;
-        const label = ellipsize(ctx, data.place, 340);
-        const tw = ctx.measureText(label).width;
-        // Nhãn nằm cạnh ghim; nếu dài thì lùi sang trái để không tràn khỏi tranh
-        const bx = Math.min(650, w - (tw + 36) - 24);
-        ctx.fillStyle = 'rgba(251,244,230,0.95)';
-        roundRect(ctx, bx, 168, tw + 36, 52, 14); ctx.fill();
-        ctx.fillStyle = INK;
-        ctx.textBaseline = 'middle';
-        ctx.fillText(label, bx + 18, 195);
-        ctx.textBaseline = 'alphabetic';
-      }
-    }
-  };
-
-  function star(ctx, cx, cy, R, r, color) {
-    ctx.fillStyle = color;
-    ctx.beginPath();
-    for (let i = 0; i < 10; i++) {
-      const rad = i % 2 ? r : R;
-      const a = -Math.PI / 2 + (i * Math.PI) / 5;
-      const x = cx + Math.cos(a) * rad;
-      const y = cy + Math.sin(a) * rad;
-      if (i) ctx.lineTo(x, y); else ctx.moveTo(x, y);
-    }
-    ctx.closePath();
-    ctx.fill();
   }
 
   function heart(ctx, x, y, s, color) {
@@ -389,53 +112,175 @@ window.NNBT = window.NNBT || {};
     ctx.fill();
   }
 
-  // ---------- Bưu thiếp ----------
+  // ---------- Tranh: đêm cực quang, hộp nhẫn trên đồi tuyết (tĩnh vật — không vẽ người) ----------
 
-  function drawPaper(ctx, rand) {
-    ctx.fillStyle = '#fbf4e6';
-    ctx.fillRect(0, 0, W, H);
-    ctx.fillStyle = '#8a6a4f';
-    for (let i = 0; i < 2600; i++) {
-      ctx.globalAlpha = 0.03 + rand() * 0.04;
-      ctx.fillRect(rand() * W, rand() * H, 1 + rand() * 1.5, 1 + rand() * 1.5);
+  function drawArt(ctx, w, h, rand) {
+    const k = h / 640;
+    const hy = Math.round(h * 0.62);
+
+    // trời đêm tím hồng
+    let g = ctx.createLinearGradient(0, 0, 0, h);
+    g.addColorStop(0, '#231d3d');
+    g.addColorStop(0.55, '#4a3a66');
+    g.addColorStop(1, '#8a6a8f');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, w, h);
+
+    // sao
+    for (let i = 0; i < 130; i++) {
+      ctx.globalAlpha = 0.3 + 0.6 * rand();
+      ctx.fillStyle = '#fff5fa';
+      ctx.beginPath(); ctx.arc(rand() * w, rand() * hy * 0.92, 0.8 + rand() * 1.7, 0, Math.PI * 2); ctx.fill();
     }
     ctx.globalAlpha = 1;
-    ctx.strokeStyle = '#e2d2b6';
+
+    // dải cực quang xanh ngọc pha hồng
+    ctx.save();
+    ctx.globalCompositeOperation = 'lighter';
+    ctx.lineCap = 'round';
+    [[70, 150 * k, 0.32, '120,235,195'], [46, 210 * k, 0.26, '255,160,205'], [90, 108 * k, 0.18, '150,175,255']].forEach(([lw, y0, a, c]) => {
+      const lg = ctx.createLinearGradient(0, 0, w, 0);
+      lg.addColorStop(0, 'rgba(' + c + ',0)');
+      lg.addColorStop(0.35, 'rgba(' + c + ',' + a + ')');
+      lg.addColorStop(0.7, 'rgba(' + c + ',' + a * 0.8 + ')');
+      lg.addColorStop(1, 'rgba(' + c + ',0)');
+      ctx.strokeStyle = lg;
+      ctx.lineWidth = lw * Math.max(0.75, k);
+      ctx.shadowColor = 'rgba(' + c + ',0.6)';
+      ctx.shadowBlur = 70;
+      ctx.beginPath();
+      ctx.moveTo(-40, y0 + 60);
+      ctx.bezierCurveTo(240, y0 - 80, 520, y0 + 110, 980, y0 - 40);
+      ctx.stroke();
+    });
+    ctx.restore();
+
+    // đồi xa
+    ctx.fillStyle = '#5d4a78';
+    ctx.beginPath(); ctx.moveTo(0, hy - 30 * k); ctx.bezierCurveTo(220, hy - 86 * k, 520, hy - 16 * k, w, hy - 64 * k); ctx.lineTo(w, hy + 40); ctx.lineTo(0, hy + 40); ctx.closePath(); ctx.fill();
+
+    // đồi tuyết hồng nhạt
+    const ridge = (c) => { c.moveTo(0, hy + 10); c.bezierCurveTo(260, hy - 46 * k, 600, hy - 36 * k, w, hy + 18); };
+    g = ctx.createLinearGradient(0, hy - 46 * k, 0, h);
+    g.addColorStop(0, '#f6dce8');
+    g.addColorStop(1, '#c9a9cf');
+    ctx.fillStyle = g;
+    ctx.beginPath(); ridge(ctx); ctx.lineTo(w, h); ctx.lineTo(0, h); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,0.7)'; ctx.lineWidth = 3;
+    ctx.beginPath(); ridge(ctx); ctx.stroke();
+
+    // hộp nhẫn sáng giữa tuyết
+    const bx = w * 0.62;
+    const by = hy + (h - hy) * 0.42;
+    const s = 1.5 * Math.max(0.8, k);
+    const glow = ctx.createRadialGradient(bx, by - 30 * s, 6, bx, by - 30 * s, 170 * s);
+    glow.addColorStop(0, 'rgba(255,236,200,0.85)');
+    glow.addColorStop(1, 'rgba(255,236,200,0)');
+    ctx.fillStyle = glow;
+    ctx.fillRect(bx - 300, by - 260, 600, 420);
+    ctx.save();
+    ctx.translate(bx, by);
+    ctx.scale(s, s);
+    ctx.fillStyle = 'rgba(120,80,120,0.35)';
+    ctx.beginPath(); ctx.ellipse(0, 18, 40, 7, 0, 0, Math.PI * 2); ctx.fill();
+    // nắp mở
+    ctx.fillStyle = '#b34a6b';
+    ctx.beginPath(); ctx.moveTo(-30, -22); ctx.lineTo(30, -22); ctx.lineTo(26, -44); ctx.lineTo(-26, -44); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#f7e9ee';
+    ctx.beginPath(); ctx.moveTo(-24, -24); ctx.lineTo(24, -24); ctx.lineTo(21, -40); ctx.lineTo(-21, -40); ctx.closePath(); ctx.fill();
+    // thân hộp
+    roundRect(ctx, -30, -6, 60, 26, 6);
+    ctx.fillStyle = '#c95c7e'; ctx.fill();
+    ctx.fillStyle = '#f7e9ee';
+    roundRect(ctx, -24, -12, 48, 10, 4); ctx.fill();
+    // nhẫn + viên đá
+    ctx.strokeStyle = '#e8c46a'; ctx.lineWidth = 4;
+    ctx.beginPath(); ctx.arc(0, -16, 10, 0, Math.PI * 2); ctx.stroke();
+    ctx.fillStyle = '#eef8ff'; ctx.strokeStyle = '#bfe1f2'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(-5, -28); ctx.lineTo(0, -35); ctx.lineTo(5, -28); ctx.lineTo(0, -24); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = '#fffbe8'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(14, -46); ctx.lineTo(14, -54); ctx.moveTo(10, -50); ctx.lineTo(18, -50); ctx.stroke();
+    ctx.restore();
+
+    // hai hàng dấu chân đi cạnh nhau dẫn tới hộp nhẫn (gần to, xa nhỏ)
+    const p0 = [w * 0.18, h + 20];
+    const p1 = [w * 0.32, by + (h - by) * 0.4];
+    const p2 = [bx - 60 * s, by + 10 * s];
+    const at = (t) => [
+      (1 - t) * (1 - t) * p0[0] + 2 * (1 - t) * t * p1[0] + t * t * p2[0],
+      (1 - t) * (1 - t) * p0[1] + 2 * (1 - t) * t * p1[1] + t * t * p2[1]
+    ];
+    ctx.fillStyle = 'rgba(122,86,130,0.45)';
+    const steps = 14;
+    for (let i = 1; i < steps; i++) {
+      const t = i / steps;
+      const [x, y] = at(t);
+      const [x2, y2] = at(Math.min(1, t + 0.01));
+      const ang = Math.atan2(y2 - y, x2 - x);
+      const sc = 1 - t * 0.65;
+      const nx = -Math.sin(ang);
+      const ny = Math.cos(ang);
+      [-1, 1].forEach((trail) => {
+        const off = trail * 24 * sc + (i % 2 ? 1 : -1) * 6 * sc;
+        ctx.beginPath();
+        ctx.ellipse(x + nx * off, y + ny * off, 11 * sc, 5 * sc, ang, 0, Math.PI * 2);
+        ctx.fill();
+      });
+    }
+  }
+
+  // ---------- Giấy, tem, dấu bưu điện ----------
+
+  function drawPaper(ctx, rand) {
+    const g = ctx.createLinearGradient(0, 0, W, H);
+    g.addColorStop(0, '#fff8fa');
+    g.addColorStop(1, '#fdeef3');
+    ctx.fillStyle = g;
+    ctx.fillRect(0, 0, W, H);
+    ctx.fillStyle = '#b07a92';
+    for (let i = 0; i < 1800; i++) {
+      ctx.globalAlpha = 0.02 + rand() * 0.03;
+      ctx.fillRect(rand() * W, rand() * H, 1 + rand() * 1.2, 1 + rand() * 1.2);
+    }
+    ctx.globalAlpha = 1;
+    ctx.strokeStyle = LINE;
     ctx.lineWidth = 3;
-    roundRect(ctx, 28, 28, W - 56, H - 56, 18);
+    roundRect(ctx, 28, 28, W - 56, H - 56, 22);
     ctx.stroke();
   }
 
-  function drawStamp(ctx, trip, texts) {
+  function drawStamp(ctx, texts) {
     ctx.save();
     ctx.translate(892, 104);
     ctx.rotate(-0.05);
     const sw = 140;
     const sh = 168;
-    ctx.shadowColor = 'rgba(60,40,20,0.25)';
+    ctx.shadowColor = 'rgba(110,55,80,0.22)';
     ctx.shadowBlur = 12;
-    ctx.fillStyle = '#fffaf0';
+    ctx.fillStyle = '#fffafc';
     ctx.fillRect(-sw / 2, -sh / 2, sw, sh);
     ctx.shadowBlur = 0;
-    // răng cưa
-    ctx.fillStyle = '#fbf4e6';
+    ctx.fillStyle = '#fdeef3';
     for (let x = -sw / 2; x <= sw / 2; x += 14) {
       ctx.beginPath(); ctx.arc(x, -sh / 2, 5, 0, Math.PI * 2); ctx.arc(x, sh / 2, 5, 0, Math.PI * 2); ctx.fill();
     }
     for (let y = -sh / 2; y <= sh / 2; y += 14) {
       ctx.beginPath(); ctx.arc(-sw / 2, y, 5, 0, Math.PI * 2); ctx.arc(sw / 2, y, 5, 0, Math.PI * 2); ctx.fill();
     }
-    ctx.fillStyle = STAMP_COLORS[trip] || '#c9a24f';
+    const sg = ctx.createLinearGradient(0, -sh / 2, 0, sh / 2);
+    sg.addColorStop(0, '#e58fa3');
+    sg.addColorStop(1, '#b4546f');
+    ctx.fillStyle = sg;
     ctx.fillRect(-sw / 2 + 14, -sh / 2 + 14, sw - 28, sh - 28);
-    heart(ctx, 0, -14, 26, 'rgba(255,248,236,0.92)');
-    ctx.fillStyle = '#fff8ec';
+    heart(ctx, 0, -14, 26, 'rgba(255,248,250,0.95)');
+    ctx.fillStyle = '#fff8fa';
     ctx.font = '400 40px ' + FONT_HAND;
     ctx.textAlign = 'center';
     ctx.fillText(texts.stampDate, 0, 52);
     ctx.restore();
     // dấu bưu điện
     ctx.save();
-    ctx.strokeStyle = 'rgba(156,79,45,0.45)';
+    ctx.strokeStyle = 'rgba(169,77,107,0.4)';
     ctx.lineWidth = 3;
     ctx.beginPath(); ctx.arc(808, 196, 58, 0, Math.PI * 2); ctx.stroke();
     ctx.beginPath(); ctx.arc(808, 196, 46, 0, Math.PI * 2); ctx.stroke();
@@ -450,9 +295,36 @@ window.NNBT = window.NNBT || {};
     ctx.restore();
   }
 
+  // Một đoạn chữ tự co cỡ cho vừa khoảng trống; quá dài thì cắt và thêm "…"
+  function fitBlock(ctx, text, font, maxSize, minSize, maxW, room) {
+    let size = maxSize;
+    let lines;
+    let lh;
+    for (;;) {
+      ctx.font = font(size);
+      lh = Math.round(size * 1.45);
+      lines = wrap(ctx, text, maxW);
+      if (lines.length * lh <= room || size <= minSize) break;
+      size -= 1;
+    }
+    const maxLines = Math.max(1, Math.floor(room / lh));
+    const fits = lines.length <= maxLines;
+    if (!fits) {
+      lines = lines.slice(0, maxLines);
+      lines[maxLines - 1] = ellipsize(ctx, lines[maxLines - 1] + '…', maxW);
+    }
+    return { lines, lh, fits };
+  }
+
+  function label(ctx, text, x, y) {
+    ctx.fillStyle = ROSE;
+    ctx.font = '500 23px ' + FONT_BODY;
+    ctx.fillText(text.toUpperCase(), x, y);
+  }
+
   function render(canvas, data) {
     const texts = data.texts;
-    const sample = [texts.heading, data.tripLine, data.place, data.message, texts.messageHeading, texts.placeLabel, texts.footer, 'ạảãáàâầấậăằắặđêềếệôồốộơờớợưừứựỳýỵỷỹ'].filter(Boolean).join(' ');
+    const sample = [texts.heading, data.wish, data.message, texts.wishHeading, texts.messageHeading, texts.footer, 'ạảãáàâầấậăằắặđêềếệôồốộơờớợưừứựỳýỵỷỹ'].filter(Boolean).join(' ');
     return ensureFonts(sample).then(() => {
       canvas.width = W;
       canvas.height = H;
@@ -461,101 +333,67 @@ window.NNBT = window.NNBT || {};
 
       drawPaper(ctx, rand);
 
-      // Tranh
+      // Tranh: có lời nhắn → thấp lại để nhường chỗ cho chữ
       const ax = 64;
       const ay = 64;
       const aw = W - 128;
-      // Có lời nhắn hoặc địa điểm → tranh thấp lại để nhường chỗ cho chữ.
       const msgLen = data.message ? data.message.length : 0;
-      let ah = 740;
-      if (msgLen > 140) ah = data.place ? 430 : 480;
-      else if (msgLen > 0) ah = data.place ? 500 : 580;
-      else if (data.place) ah = 640;
+      const ah = msgLen > 140 ? 430 : msgLen > 60 ? 520 : msgLen > 0 ? 580 : 640;
       ctx.save();
-      roundRect(ctx, ax, ay, aw, ah, 20);
+      roundRect(ctx, ax, ay, aw, ah, 22);
       ctx.clip();
       ctx.translate(ax, ay);
-      (ART[data.trip] || ART.slow)(ctx, aw, ah, rng(1020 + data.trip.length), data);
+      drawArt(ctx, aw, ah, rng(1027));
       ctx.restore();
-      ctx.strokeStyle = 'rgba(90,64,40,0.12)';
-      ctx.lineWidth = 2;
-      roundRect(ctx, ax, ay, aw, ah, 20);
-      ctx.stroke();
 
-      drawStamp(ctx, data.trip, texts);
+      drawStamp(ctx, texts);
 
-      // Chữ
       const x = 96;
       const maxW = W - 192;
       const bottomLimit = H - 120;
-      let y = ay + ah + 84;
+      let y = ay + ah + 78;
 
-      // Tiêu đề: thu nhỏ dần cho vừa một dòng (tối thiểu 48px, nếu vẫn dài thì xuống dòng)
+      // Tiêu đề (Lora), thu nhỏ dần cho vừa một dòng
       ctx.textAlign = 'left';
       ctx.fillStyle = INK;
-      let hs = 66;
-      ctx.font = '400 ' + hs + 'px ' + FONT_HAND;
-      while (ctx.measureText(texts.heading).width > maxW && hs > 48) {
+      let hs = 56;
+      ctx.font = '600 ' + hs + 'px ' + FONT_SERIF;
+      while (ctx.measureText(texts.heading).width > maxW && hs > 40) {
         hs -= 2;
-        ctx.font = '400 ' + hs + 'px ' + FONT_HAND;
+        ctx.font = '600 ' + hs + 'px ' + FONT_SERIF;
       }
-      wrap(ctx, texts.heading, maxW).forEach((line) => { ctx.fillText(line, x, y); y += Math.round(hs * 1.18); });
+      wrap(ctx, texts.heading, maxW).forEach((line) => { ctx.fillText(line, x, y); y += Math.round(hs * 1.25); });
 
-      y += 4;
+      // Lời chúc của anh
+      y += 22;
+      label(ctx, texts.wishHeading, x, y);
+      y += 14;
+      const wishRoom = data.message ? Math.min(250, bottomLimit - y - 170) : bottomLimit - y;
+      const wish = fitBlock(ctx, data.wish, (sz) => 'italic 400 ' + sz + 'px ' + FONT_SERIF, 34, 24, maxW, wishRoom);
       ctx.fillStyle = INK_SOFT;
-      ctx.font = '400 34px ' + FONT_BODY;
-      wrap(ctx, data.tripLine, maxW).forEach((line) => { ctx.fillText(line, x, y); y += 50; });
+      wish.lines.forEach((line) => { y += wish.lh; ctx.fillText(line, x, y - wish.lh * 0.28); });
 
-      if (data.place) {
-        y += 18;
-        ctx.fillStyle = WARM_DEEP;
-        ctx.font = '500 24px ' + FONT_BODY;
-        ctx.fillText(texts.placeLabel.toUpperCase(), x, y);
-        y += 62;
-        ctx.font = '400 56px ' + FONT_HAND;
-        wrap(ctx, data.place, maxW).slice(0, 2).forEach((line) => { ctx.fillText(line, x, y); y += 68; });
-      }
-
+      // Lời nhắn của em
       if (data.message) {
-        y += 18;
-        ctx.strokeStyle = '#e2d2b6';
+        y += 26;
+        ctx.strokeStyle = LINE;
         ctx.lineWidth = 2;
         ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + maxW, y); ctx.stroke();
-        y += 50;
-        ctx.fillStyle = WARM_DEEP;
-        ctx.font = '500 24px ' + FONT_BODY;
-        ctx.fillText(texts.messageHeading.toUpperCase(), x, y);
-        y += 16;
-
-        // Tự giảm cỡ chữ cho vừa chỗ; nếu vẫn dài thì cắt và thêm "…"
-        const room = bottomLimit - y;
-        let size = 44;
-        let lines;
-        let lh;
-        for (;;) {
-          ctx.font = '400 ' + size + 'px ' + FONT_HAND;
-          lh = Math.round(size * 1.3);
-          lines = wrap(ctx, data.message, maxW);
-          if (lines.length * lh <= room || size <= 26) break;
-          size -= 2;
-        }
-        // Ghi lại để kiểm thử: lời nhắn có bị cắt không
-        canvas.dataset.messageLines = String(lines.length);
-        canvas.dataset.messageFits = String(lines.length * lh <= room);
-        const maxLines = Math.max(1, Math.floor(room / lh));
-        if (lines.length > maxLines) {
-          lines = lines.slice(0, maxLines);
-          lines[maxLines - 1] = ellipsize(ctx, lines[maxLines - 1] + '…', maxW);
-        }
-        ctx.fillStyle = '#2f2620';
-        lines.forEach((line) => { y += lh; ctx.fillText(line, x, y - lh * 0.25); });
+        y += 46;
+        label(ctx, texts.messageHeading, x, y);
+        y += 12;
+        const msg = fitBlock(ctx, data.message, (sz) => '400 ' + sz + 'px ' + FONT_SERIF, 38, 24, maxW, bottomLimit - y);
+        canvas.dataset.messageLines = String(msg.lines.length);
+        canvas.dataset.messageFits = String(msg.fits);
+        ctx.fillStyle = INK;
+        msg.lines.forEach((line) => { y += msg.lh; ctx.fillText(line, x, y - msg.lh * 0.28); });
       }
 
       // Chân thiếp
-      ctx.fillStyle = '#8a7768';
+      ctx.fillStyle = '#a88d98';
       ctx.font = '400 24px ' + FONT_BODY;
       ctx.fillText(texts.footer, x, H - 66);
-      heart(ctx, W - 110, H - 76, 16, '#d98a63');
+      heart(ctx, W - 110, H - 76, 16, '#e58fa3');
 
       return canvas;
     });
@@ -567,11 +405,8 @@ window.NNBT = window.NNBT || {};
         if (canvas.toBlob) {
           canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error('toBlob trả về rỗng'))), 'image/png');
         } else {
-          // Trình duyệt rất cũ: đổi từ dataURL
-          const data = atob(canvas.toDataURL('image/png').split(',')[1]);
-          const arr = new Uint8Array(data.length);
-          for (let i = 0; i < data.length; i++) arr[i] = data.charCodeAt(i);
-          resolve(new Blob([arr], { type: 'image/png' }));
+          const data = canvas.toDataURL('image/png');
+          fetch(data).then((r) => r.blob()).then(resolve, reject);
         }
       } catch (e) {
         reject(e);

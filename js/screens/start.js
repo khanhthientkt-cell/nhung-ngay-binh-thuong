@@ -15,8 +15,6 @@
         '<circle cx="198" cy="122" r="66" fill="var(--wash-mist)" opacity="0.55"/>' +
         '<circle cx="272" cy="56" r="17" fill="var(--wash-dawn)" opacity="0.7"/>' +
       '</g>' +
-      '<path d="M18 212 C 92 190, 160 222, 228 196 S 296 168, 306 162" fill="none" stroke="var(--wash-dawn)" ' +
-        'stroke-width="5" stroke-linecap="round" opacity="0.85" filter="url(#wc-line)"/>' +
     '</svg>';
 
   NNBT.engine.register('start', {

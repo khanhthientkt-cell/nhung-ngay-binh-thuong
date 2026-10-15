@@ -5,9 +5,9 @@
 .polaroid {
   margin: 0;
   padding: 4% 4% 13%;
-  background: #fffdf7;
+  background: #fffcfd;
   border-radius: 3px;
-  box-shadow: 0 1px 2px rgba(60, 40, 20, 0.12), 0 14px 28px -14px rgba(60, 40, 20, 0.55);
+  box-shadow: 0 1px 2px rgba(110, 55, 80, 0.12), 0 14px 28px -14px rgba(110, 55, 80, 0.55);
   transform: rotate(var(--rotate, 0deg));
 }
 .polaroid img {
@@ -15,7 +15,7 @@
   width: 100%;
   height: auto;
   border-radius: 1px;
-  background: #efe6d6;
+  background: #f6e4ea;
   -webkit-touch-callout: none;
   user-select: none;
 }
@@ -30,9 +30,9 @@
   pointer-events: none;
   transition: opacity 700ms var(--ease);
   background:
-    radial-gradient(ellipse at 18% 22%, rgba(231, 165, 131, 0.28), transparent 55%),
-    radial-gradient(ellipse at 85% 80%, rgba(157, 191, 207, 0.3), transparent 55%),
-    #f6eedf;
+    radial-gradient(ellipse at 18% 22%, rgba(245, 184, 196, 0.28), transparent 55%),
+    radial-gradient(ellipse at 85% 80%, rgba(201, 211, 238, 0.3), transparent 55%),
+    #fbeff3;
 }
 .photo-stage.is-active { opacity: 1; }
 
@@ -53,7 +53,7 @@
   font: inherit;
   -webkit-tap-highlight-color: transparent;
 }
-.polaroid--zoom:hover { box-shadow: 0 2px 4px rgba(60, 40, 20, 0.14), 0 18px 32px -14px rgba(60, 40, 20, 0.6); }
+.polaroid--zoom:hover { box-shadow: 0 2px 4px rgba(110, 55, 80, 0.14), 0 18px 32px -14px rgba(110, 55, 80, 0.6); }
 .polaroid--zoom:focus-visible { outline: 3px solid var(--focus); outline-offset: 3px; }
 
 .photo-viewer {
@@ -70,11 +70,11 @@
   cursor: zoom-out;
 }
 .photo-viewer:not([open]) { display: none; }
-.photo-viewer::backdrop { background: rgba(30, 22, 16, 0.86); }
+.photo-viewer::backdrop { background: rgba(60, 30, 45, 0.86); }
 .photo-viewer__img {
   max-width: 100%;
   max-height: calc(100vh - 110px);
-  border: 10px solid #fffdf7;
+  border: 10px solid #fffcfd;
   border-bottom-width: 36px;
   border-radius: 3px;
   box-shadow: 0 20px 50px -20px rgba(0, 0, 0, 0.7);
@@ -111,3 +111,19 @@
 }
 .finale__photos .polaroid { width: min(38%, 9.5rem); }
 .finale__photos .polaroid + .polaroid { margin-left: -6%; margin-top: 1.2rem; }
+
+/* Album ở màn kết Chương 5: 6 polaroid xếp so le như dán lên trang giấy */
+.finale__album {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: clamp(10px, 1.6vw, 22px);
+  max-width: 24rem;
+  margin: 0 auto 1.2rem;
+  align-items: center;
+}
+.finale__album .polaroid { width: 100%; }
+.finale__album .polaroid:nth-child(even) { margin-top: 1rem; }
+.finale__album .polaroid:hover { z-index: 2; }
+@media (min-width: 1100px) and (min-height: 820px) {
+  .finale__album { max-width: 32rem; }
+}

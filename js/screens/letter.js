@@ -21,31 +21,31 @@
       '<svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMax slice" role="img" aria-labelledby="' + titleId + '">' +
         '<title id="' + titleId + '">' + alt + '</title>' +
         '<defs>' +
-          '<linearGradient id="desk-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f4e6cd"/><stop offset="1" stop-color="#e9d2ae"/></linearGradient>' +
-          '<linearGradient id="desk-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe7b5"/><stop offset="1" stop-color="#d6e4e0"/></linearGradient>' +
-          '<linearGradient id="desk-beam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff4d2" stop-opacity="0.9"/><stop offset="1" stop-color="#fff4d2" stop-opacity="0"/></linearGradient>' +
-          '<linearGradient id="desk-wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c48f5f"/><stop offset="1" stop-color="#966641"/></linearGradient>' +
-          '<radialGradient id="desk-glow"><stop offset="0" stop-color="#fff0c8" stop-opacity="0.5"/><stop offset="1" stop-color="#fff0c8" stop-opacity="0"/></radialGradient>' +
+          '<linearGradient id="desk-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe6ec"/><stop offset="1" stop-color="#f3d3dd"/></linearGradient>' +
+          '<linearGradient id="desk-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fde2ea"/><stop offset="1" stop-color="#e4e3f4"/></linearGradient>' +
+          '<linearGradient id="desk-beam" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3f6" stop-opacity="0.9"/><stop offset="1" stop-color="#fff3f6" stop-opacity="0"/></linearGradient>' +
+          '<linearGradient id="desk-wood" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2b3a6"/><stop offset="1" stop-color="#c99086"/></linearGradient>' +
+          '<radialGradient id="desk-glow"><stop offset="0" stop-color="#ffeef3" stop-opacity="0.5"/><stop offset="1" stop-color="#ffeef3" stop-opacity="0"/></radialGradient>' +
         '</defs>' +
 
         // Tường
         '<rect width="400" height="300" fill="url(#desk-wall)"/>' +
         '<g filter="url(#wc-wash)" opacity="0.35">' +
-          '<circle cx="330" cy="70" r="70" fill="#f1d3a4"/>' +
+          '<circle cx="330" cy="70" r="70" fill="#f6cdd8"/>' +
         '</g>' +
 
         // Cửa sổ: bầu trời sớm, tán lá phía ngoài, khung gỗ sơn kem
         '<g>' +
           '<rect x="58" y="22" width="150" height="138" rx="3" fill="url(#desk-sky)"/>' +
           '<g filter="url(#wc-wash)" opacity="0.6">' +
-            '<circle cx="84" cy="58" r="30" fill="#a8c29a"/>' +
-            '<circle cx="186" cy="44" r="24" fill="#b9d0a6"/>' +
-            '<circle cx="176" cy="132" r="20" fill="#c3d6b0"/>' +
+            '<circle cx="84" cy="58" r="30" fill="#b9d3a8"/>' +
+            '<circle cx="186" cy="44" r="24" fill="#c9ddb4"/>' +
+            '<circle cx="176" cy="132" r="20" fill="#d3e5c0"/>' +
           '</g>' +
-          '<circle cx="150" cy="70" r="14" fill="#fff1c4" opacity="0.9" filter="url(#wc-wash)"/>' +
-          '<rect x="58" y="22" width="150" height="138" rx="3" fill="none" stroke="#fbf3e4" stroke-width="7"/>' +
-          '<path d="M133 22 V160 M58 91 H208" stroke="#fbf3e4" stroke-width="5"/>' +
-          '<rect x="50" y="158" width="166" height="8" rx="2" fill="#f6ead6"/>' +
+          '<circle cx="150" cy="70" r="14" fill="#fff0f4" opacity="0.9" filter="url(#wc-wash)"/>' +
+          '<rect x="58" y="22" width="150" height="138" rx="3" fill="none" stroke="#fff7f9" stroke-width="7"/>' +
+          '<path d="M133 22 V160 M58 91 H208" stroke="#fff7f9" stroke-width="5"/>' +
+          '<rect x="50" y="158" width="166" height="8" rx="2" fill="#fcecf1"/>' +
         '</g>' +
 
         // Vệt nắng từ cửa sổ xuống mặt bàn
@@ -53,8 +53,8 @@
 
         // Bàn gỗ
         '<rect x="0" y="200" width="400" height="100" fill="url(#desk-wood)"/>' +
-        '<path d="M0 201 H400" stroke="#ddb07f" stroke-width="3"/>' +
-        '<g stroke="#6f4729" stroke-opacity="0.22" fill="none" stroke-width="1.2" filter="url(#wc-line)">' +
+        '<path d="M0 201 H400" stroke="#ecc3b8" stroke-width="3"/>' +
+        '<g stroke="#9a6b78" stroke-opacity="0.22" fill="none" stroke-width="1.2" filter="url(#wc-line)">' +
           '<path d="M8 228 C 90 222, 160 236, 250 226 S 360 232, 396 226"/>' +
           '<path d="M0 260 C 70 254, 150 268, 230 258 S 340 264, 400 256"/>' +
           '<path d="M24 286 C 120 280, 200 292, 300 284"/>' +
@@ -63,18 +63,18 @@
 
         // Phong bì (nghiêng nhẹ)
         '<g class="envelope" transform="rotate(-4 200 236)">' +
-          '<ellipse cx="203" cy="268" rx="78" ry="6" fill="#5a3a22" opacity="0.22"/>' +
-          '<rect x="128" y="206" width="144" height="60" rx="3" fill="#ead9bc"/>' +
-          '<path class="env-flap-open" d="M128 206 L200 166 L272 206 Z" fill="#e6d3b2" stroke="#d3bb94"/>' +
+          '<ellipse cx="203" cy="268" rx="78" ry="6" fill="#7a4f63" opacity="0.22"/>' +
+          '<rect x="128" y="206" width="144" height="60" rx="3" fill="#f6dfe6"/>' +
+          '<path class="env-flap-open" d="M128 206 L200 166 L272 206 Z" fill="#f2d6df" stroke="#e6bcc8"/>' +
           '<g class="env-sheet">' +
-            '<rect x="140" y="210" width="120" height="52" rx="2" fill="#fffaf0" stroke="#e3d3b6"/>' +
-            '<path d="M152 222 H246 M152 231 H236 M152 240 H242" stroke="#c7b28d" stroke-width="1.4" stroke-linecap="round"/>' +
+            '<rect x="140" y="210" width="120" height="52" rx="2" fill="#fffafc" stroke="#f1d5de"/>' +
+            '<path d="M152 222 H246 M152 231 H236 M152 240 H242" stroke="#e0b7c3" stroke-width="1.4" stroke-linecap="round"/>' +
           '</g>' +
-          '<path d="M128 206 L200 244 L272 206 V266 H128 Z" fill="#f4e7cf" stroke="#d9c39e"/>' +
+          '<path d="M128 206 L200 244 L272 206 V266 H128 Z" fill="#fbeaf0" stroke="#ebc9d3"/>' +
           '<g class="env-flap-closed">' +
-            '<path d="M128 206 L200 246 L272 206 Z" fill="#efe0c3" stroke="#d3bb94"/>' +
-            '<circle cx="200" cy="238" r="7" fill="#b0532e"/>' +
-            '<circle cx="198" cy="236" r="2.2" fill="#d98a63" opacity="0.8"/>' +
+            '<path d="M128 206 L200 246 L272 206 Z" fill="#f8e4ea" stroke="#e6bcc8"/>' +
+            '<circle cx="200" cy="238" r="7" fill="#c4607f"/>' +
+            '<circle cx="198" cy="236" r="2.2" fill="#e58fa3" opacity="0.8"/>' +
           '</g>' +
         '</g>' +
       '</svg>'

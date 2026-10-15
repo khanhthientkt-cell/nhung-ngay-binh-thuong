@@ -33,7 +33,12 @@ window.NNBT = window.NNBT || {};
     busStop:    photo('ch4-nhat-tram-xe-buyt.jpg', 531, 765, 'Ảnh: vợ ngồi ở trạm xe buýt trong chuyến đi Nhật Bản.'),
     feet:       photo('ch4-hai-doi-chan.jpg', 557, 710, 'Ảnh: hai đôi chân đứng cạnh nhau.'),
     flowers:    photo('ch5-vo-tuong-hoa.jpg', 505, 792, 'Ảnh: vợ đứng trước bức tường hoa.'),
-    river:      photo('ch5-vo-ben-song.jpg', 534, 727, 'Ảnh: chân dung vợ bên bờ sông.')
+    river:      photo('ch5-vo-ben-song.jpg', 534, 727, 'Ảnh: chân dung vợ bên bờ sông.'),
+    // Thêm ngày 15/10/2026 — anh chọn "gom hết vào màn kết" (album ở cuối Chương 5)
+    together:   photo('ch5-hai-dua-chup-chung.jpg', 551, 797, 'Ảnh: hai người đứng cạnh nhau, mỉm cười.'),
+    kiwi:       photo('ch5-vo-va-kiwi.jpg', 704, 586, 'Ảnh: vợ cười bên cạnh mấy hộp kiwi.'),
+    aoDai:      photo('ch5-ao-dai.jpg', 452, 719, 'Ảnh: hai người mặc áo dài trắng chụp ảnh trước gương.'),
+    helmets:    photo('ch5-mu-bao-hiem-chieu-home.jpg', 536, 569, 'Ảnh: hai người đội mũ bảo hiểm đỏ, giơ tay chụp ảnh trước gương ở Chiều Home.')
   };
 
   // step:   bước triển khai dự kiến (chỉ dùng cho ghi chú trong khung tạm).
@@ -57,62 +62,24 @@ window.NNBT = window.NNBT || {};
   // ĐÃ CHỐT (nguyên văn): 4 lựa chọn chuyến đi (3 lựa chọn đầu), dòng kết thúc.
   // Giấc mơ cực quang (dream) và lời cuối (letter): nguyên văn bản anh tự hoàn thiện ngày 15/10/2026.
   const finale = {
-    blank: {
-      // ĐÃ DUYỆT
-      text: { paragraphs: [
-        'Những chặng đã qua, mình đã cùng đi hết trên bản đồ.',
-        'Còn chặng tiếp theo thì vẫn là một trang giấy trống.'
-      ] },
-      alt: 'Tranh màu nước: tấm bản đồ mở rộng thành một trang giấy; con đường chấm của những chặng đã qua dừng lại, phía trước là khoảng giấy trống và một vệt sáng cực quang mờ ở góc.'
-    },
-    choose: {
-      prompt: { text: 'Chuyến đi tiếp theo của chúng mình, em muốn đó là chuyến đi như thế nào?' },
-      options: [
-        {
-          id: 'slow',
-          label: 'Một chuyến đi thật chậm, với quán cà phê, những con đường và thời gian ở cạnh nhau.', // ĐÃ CHỐT
-          postcardLine: { text: 'Một chuyến đi thật chậm: vài quán cà phê, những con đường, và thật nhiều thời gian ở cạnh nhau.' },
-          alt: 'con đường chiều uốn qua đồi, hàng cây và một chiếc bàn cà phê với hai chiếc ly'
-        },
-        {
-          id: 'new',
-          label: 'Một nơi mới để cùng khám phá.', // ĐÃ CHỐT
-          postcardLine: { text: 'Một nơi mới, để hai đứa mình cùng nhau khám phá.' },
-          alt: 'tấm bản đồ mở ra, đường chấm dẫn tới một ngôi sao, phía xa là núi mờ sương'
-        },
-        {
-          id: 'aurora',
-          label: 'Dưới bầu trời cực quang, một giấc mơ tương lai của hai người.', // ĐÃ CHỐT
-          postcardLine: { text: 'Dưới bầu trời cực quang, giấc mơ tương lai của hai đứa mình.' },
-          alt: 'bầu trời đêm đầy sao với dải cực quang xanh, một chiếc lều sáng ấm trên đồi tuyết, hai hàng dấu chân đi cạnh nhau dẫn tới lều'
-        },
-        {
-          id: 'custom',
-          // ĐÃ DUYỆT Cách gọi lựa chọn "Một địa điểm do vợ tự nhập".
-          label: 'Một nơi em tự chọn.',
-          postcardLine: { text: 'Một nơi do em chọn, để hai đứa mình cùng đến.' },
-          alt: 'tấm bản đồ giấy, đường chấm dẫn tới chiếc ghim đánh dấu nơi em chọn'
-        }
-      ],
-      // ĐÃ DUYỆT Các câu giao diện của bước chọn
-      placeLabel: { text: 'Nơi em muốn đến' },
-      placeHint: { text: 'Gõ tên một nơi bất kỳ.' },
-      placeRequired: { text: 'Em gõ tên nơi muốn đến nhé.' },
-      chooseRequired: { text: 'Em chọn một chuyến đi nhé.' },
+    // Bước viết lời nhắn cho bưu thiếp (anh chọn bỏ trang giấy trống và bước chọn chuyến đi, 15/10/2026).
+    compose: {
+      lead: { text: 'Tấm bưu thiếp này sẽ có lời chúc của anh và lời nhắn của em.' }, // MỚI — chờ anh duyệt
       messageLabel: { text: 'Lời nhắn (không bắt buộc)' },
       messageNote: { text: 'Lời nhắn chỉ nằm trong tấm bưu thiếp trên máy này, không được lưu lại hay gửi đi đâu cả.' },
       submit: { text: 'Tạo bưu thiếp' },
-      placeMax: 60,
       messageMax: 300
     },
     postcard: {
       heading: 'Chuyến đi tiếp theo của chúng mình', // tên Chương 5 (đã chốt)
-      // ĐÃ DUYỆT
-      placeLabel: { text: 'Điểm đến' },
+      // Lời chúc của anh in trên bưu thiếp: nguyên văn một câu trong lời cuối của anh.
+      wish: 'Nhân ngày 20/10, anh chúc vợ của anh sẽ luôn thật mạnh khỏe, vui vẻ và bình an, và sẽ luôn yêu anh thật nhiều nữa nhé.',
+      wishHeading: { text: 'Lời chúc của anh' },   // MỚI — chờ anh duyệt
       messageHeading: { text: 'Lời nhắn của em' },
       footer: 'Những ngày bình thường của chúng mình · 20/10',
       stampDate: '20·10',
       filename: 'buu-thiep-nhung-ngay-binh-thuong.png',
+      alt: 'tranh đêm cực quang, hộp nhẫn nhỏ đang mở trên đồi tuyết hồng, hai hàng dấu chân đi cạnh nhau dẫn tới',
       status: {
         preparing: { text: 'Đang vẽ bưu thiếp…' },
         ready: { text: 'Bưu thiếp đã sẵn sàng.' },
@@ -123,10 +90,9 @@ window.NNBT = window.NNBT || {};
       save: { text: 'Lưu ảnh bưu thiếp' },
       share: { text: 'Chia sẻ ảnh' },
       retry: { text: 'Thử lại' },
-      rechoose: { text: 'Chọn lại chuyến đi' },
+      rewrite: { text: 'Viết lại lời nhắn' },
       next: 'Tiếp tục'
-    },
-    // NGUYÊN VĂN BẢN ANH TỰ HOÀN THIỆN (15/10/2026) — Chương 5, Đoạn 1: giấc mơ dưới bầu trời cực quang.
+    },    // NGUYÊN VĂN BẢN ANH TỰ HOÀN THIỆN (15/10/2026) — Chương 5, Đoạn 1: giấc mơ dưới bầu trời cực quang.
     // Hiện ngay sau trang giấy trống, trước bước chọn chuyến đi.
     dream: {
       text: [

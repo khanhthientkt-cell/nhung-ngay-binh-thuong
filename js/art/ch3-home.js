@@ -84,39 +84,39 @@ window.NNBT = window.NNBT || {};
     return [
       '<rect width="400" height="300" fill="url(#c3-wall)"/>',
       // giấy dán tường chấm nhỏ
-      '<g fill="#d9b994" opacity="0.35">',
+      '<g fill="#e9b7c6" opacity="0.35">',
         '<circle cx="30" cy="30" r="1.6"/><circle cx="70" cy="60" r="1.6"/><circle cx="110" cy="28" r="1.6"/><circle cx="290" cy="34" r="1.6"/>',
         '<circle cx="330" cy="70" r="1.6"/><circle cx="370" cy="30" r="1.6"/><circle cx="50" cy="110" r="1.6"/><circle cx="360" cy="140" r="1.6"/>',
       '</g>',
       // cửa sổ lúc chạng vạng
       '<rect x="150" y="34" width="100" height="98" rx="3" fill="url(#c3-dusk)"/>',
-      '<circle cx="226" cy="58" r="7" fill="#fbe6c4" opacity="0.8"/>',
-      '<path d="M200 34 V132 M150 83 H250" stroke="#f1dcc0" stroke-width="4"/>',
-      '<rect x="150" y="34" width="100" height="98" rx="3" fill="none" stroke="#f6e7d2" stroke-width="5"/>',
-      '<path d="M142 134 H258" stroke="#d6b48d" stroke-width="5" stroke-linecap="round"/>',
+      '<circle cx="226" cy="58" r="7" fill="#fff0e6" opacity="0.8"/>',
+      '<path d="M200 34 V132 M150 83 H250" stroke="#fbe9ef" stroke-width="4"/>',
+      '<rect x="150" y="34" width="100" height="98" rx="3" fill="none" stroke="#fff3f6" stroke-width="5"/>',
+      '<path d="M142 134 H258" stroke="#ecc3cf" stroke-width="5" stroke-linecap="round"/>',
       // khung tranh nhỏ trên tường
-      '<rect x="40" y="56" width="40" height="32" rx="2" fill="#f4e6cf" stroke="#b58a62" stroke-width="3"/>',
+      '<rect x="40" y="56" width="40" height="32" rx="2" fill="#fff3f6" stroke="#d39bab" stroke-width="3"/>',
       '<path d="M46 82 L58 68 L66 76 L72 70 L76 82 Z" fill="#a9bd8d"/>',
       // đèn cây bên phải
       '<circle cx="342" cy="120" r="78" fill="url(#c3-lamp)"/>',
-      '<path d="M342 128 V252" stroke="#5a4636" stroke-width="3"/><path d="M330 254 h24" stroke="#5a4636" stroke-width="4" stroke-linecap="round"/>',
-      '<path d="M326 128 h32 l-6 -24 h-20 z" fill="#f4dcaa" stroke="#c99a62" stroke-width="1.5"/>',
+      '<path d="M342 128 V252" stroke="#8a6676" stroke-width="3"/><path d="M330 254 h24" stroke="#8a6676" stroke-width="4" stroke-linecap="round"/>',
+      '<path d="M326 128 h32 l-6 -24 h-20 z" fill="#fbe3c4" stroke="#e2b48a" stroke-width="1.5"/>',
       // chậu cây bên trái
-      '<path d="M30 252 l4 -26 h28 l4 26 z" fill="#c9774f"/>',
+      '<path d="M30 252 l4 -26 h28 l4 26 z" fill="#e58fa3"/>',
       '<g fill="#8fa77c"><ellipse cx="40" cy="206" rx="7" ry="20" transform="rotate(-20 40 206)"/><ellipse cx="56" cy="204" rx="7" ry="22" transform="rotate(18 56 204)"/><ellipse cx="48" cy="198" rx="6" ry="24"/></g>',
       // sàn + thảm
       '<rect x="0" y="236" width="400" height="64" fill="url(#c3-floor)"/>',
-      '<path d="M0 237 H400" stroke="#d2a77c" stroke-width="3"/>',
-      '<ellipse cx="200" cy="272" rx="140" ry="18" fill="#e7cfae" opacity="0.7"/>',
-      '<ellipse cx="200" cy="272" rx="124" ry="13" fill="none" stroke="#c9776a" stroke-width="2" opacity="0.4" stroke-dasharray="4 5"/>'
+      '<path d="M0 237 H400" stroke="#ecc3b8" stroke-width="3"/>',
+      '<ellipse cx="200" cy="272" rx="140" ry="18" fill="#f6dbe3" opacity="0.7"/>',
+      '<ellipse cx="200" cy="272" rx="124" ry="13" fill="none" stroke="#e58fa3" stroke-width="2" opacity="0.4" stroke-dasharray="4 5"/>'
     ].join('');
   }
 
   // Sofa nhìn chính diện
   function sofa() {
     return [
-      '<ellipse cx="200" cy="250" rx="122" ry="7" fill="#5a3a22" opacity="0.2"/>',
-      '<path d="M112 240 v10 M288 240 v10" stroke="#5a4636" stroke-width="5" stroke-linecap="round"/>',
+      '<ellipse cx="200" cy="250" rx="122" ry="7" fill="#7a4f63" opacity="0.2"/>',
+      '<path d="M112 240 v10 M288 240 v10" stroke="#8a6676" stroke-width="5" stroke-linecap="round"/>',
       '<rect x="102" y="146" width="196" height="70" rx="20" fill="#7f927e"/>',
       '<rect x="112" y="152" width="86" height="58" rx="15" fill="#97ab95"/>',
       '<rect x="202" y="152" width="86" height="58" rx="15" fill="#97ab95"/>',
@@ -141,30 +141,30 @@ window.NNBT = window.NNBT || {};
       '<svg class="scene-art" viewBox="0 0 400 300" preserveAspectRatio="xMidYMid meet" role="img" aria-labelledby="' + titleId + '">',
       '<title id="' + titleId + '"></title>',
       '<defs>',
-        '<linearGradient id="c3-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#efd8ba"/><stop offset="1" stop-color="#e2c29c"/></linearGradient>',
-        '<linearGradient id="c3-dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9b98e"/><stop offset="1" stop-color="#b3a7bf"/></linearGradient>',
-        '<linearGradient id="c3-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bf9168"/><stop offset="1" stop-color="#9f7350"/></linearGradient>',
+        '<linearGradient id="c3-wall" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbe6ec"/><stop offset="1" stop-color="#f2d0db"/></linearGradient>',
+        '<linearGradient id="c3-dusk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6c2cf"/><stop offset="1" stop-color="#c3b5dd"/></linearGradient>',
+        '<linearGradient id="c3-floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e2b3a6"/><stop offset="1" stop-color="#c99086"/></linearGradient>',
         '<radialGradient id="c3-lamp"><stop offset="0" stop-color="#ffdf9e" stop-opacity="0.7"/><stop offset="1" stop-color="#ffdf9e" stop-opacity="0"/></radialGradient>',
       '</defs>',
       room(),
 
       // grownup: áo khoác và túi treo trên móc cạnh cửa
       '<g data-layer="grownup" class="scene-layer">',
-        '<rect x="84" y="70" width="64" height="168" rx="2" fill="#b98c63"/><rect x="90" y="76" width="52" height="162" fill="#c99d72"/>',
-        '<rect x="97" y="90" width="38" height="56" rx="2" fill="none" stroke="#b58a62" stroke-width="2"/><rect x="97" y="160" width="38" height="64" rx="2" fill="none" stroke="#b58a62" stroke-width="2"/>',
-        '<circle cx="136" cy="160" r="3" fill="#f1d3a0"/>',
-        '<path d="M262 92 h56" stroke="#6f4f38" stroke-width="4" stroke-linecap="round"/>',
-        '<circle cx="274" cy="96" r="2.5" fill="#6f4f38"/><circle cx="304" cy="96" r="2.5" fill="#6f4f38"/>',
+        '<rect x="84" y="70" width="64" height="168" rx="2" fill="#e2b9b0"/><rect x="90" y="76" width="52" height="162" fill="#ecc9c0"/>',
+        '<rect x="97" y="90" width="38" height="56" rx="2" fill="none" stroke="#d39bab" stroke-width="2"/><rect x="97" y="160" width="38" height="64" rx="2" fill="none" stroke="#d39bab" stroke-width="2"/>',
+        '<circle cx="136" cy="160" r="3" fill="#fbe3c4"/>',
+        '<path d="M262 92 h56" stroke="#9a6b78" stroke-width="4" stroke-linecap="round"/>',
+        '<circle cx="274" cy="96" r="2.5" fill="#9a6b78"/><circle cx="304" cy="96" r="2.5" fill="#9a6b78"/>',
         // áo khoác xanh than
         '<path d="M274 98 L258 112 L260 176 L288 176 L286 112 Z" fill="' + ANH.coat + '" filter="url(#wc-line)"/>',
         '<path d="M274 98 L262 112 M274 98 L284 112" stroke="#3e4a58" stroke-width="1.5" fill="none"/>',
         '<path d="M274 104 L274 170" stroke="#3e4a58" stroke-width="1.5"/>',
         '<circle cx="277" cy="124" r="1.6" fill="#3e4a58"/><circle cx="277" cy="140" r="1.6" fill="#3e4a58"/><circle cx="277" cy="156" r="1.6" fill="#3e4a58"/>',
         // túi đồ đi làm
-        '<path d="M304 98 L296 128 M304 98 L316 128" stroke="#5a4636" stroke-width="1.6" fill="none"/>',
-        '<rect x="290" y="126" width="34" height="28" rx="4" fill="#7a5a43"/><path d="M290 136 H324" stroke="#5f4532" stroke-width="1.5"/>',
+        '<path d="M304 98 L296 128 M304 98 L316 128" stroke="#8a6676" stroke-width="1.6" fill="none"/>',
+        '<rect x="290" y="126" width="34" height="28" rx="4" fill="#a8727f"/><path d="M290 136 H324" stroke="#8a6676" stroke-width="1.5"/>',
         // đôi giày công sở đặt ngay ngắn dưới móc
-        '<path d="M262 236 q2 -8 14 -8 q10 0 12 8 z M290 236 q2 -8 14 -8 q10 0 12 8 z" fill="#4a3a30"/>',
+        '<path d="M262 236 q2 -8 14 -8 q10 0 12 8 z M290 236 q2 -8 14 -8 q10 0 12 8 z" fill="#6a4f5c"/>',
       '</g>',
 
       // hug: áo len nâu đỏ (vợ) vòng tay ôm lấy chiếc áo len xanh than tròn bụng (anh)
@@ -200,8 +200,8 @@ window.NNBT = window.NNBT || {};
         sofa(),
         cushion(184, 186, -12, EM.light, EM.dark),
         cushion(216, 186, 12, ANH.light, ANH.dark),
-        '<path d="M232 206 Q260 200 292 210 L296 246 Q268 240 238 246 Z" fill="#f1dcc0"/>',
-        '<path d="M240 214 Q266 208 290 216 M242 226 Q266 220 292 228" stroke="#d9b994" stroke-width="1.5" fill="none"/>',
+        '<path d="M232 206 Q260 200 292 210 L296 246 Q268 240 238 246 Z" fill="#fbe9ef"/>',
+        '<path d="M240 214 Q266 208 290 216 M242 226 Q266 220 292 228" stroke="#e9b7c6" stroke-width="1.5" fill="none"/>',
       '</g>',
 
       // miss: sofa trống, ánh xanh dịu, nốt nhạc mờ
