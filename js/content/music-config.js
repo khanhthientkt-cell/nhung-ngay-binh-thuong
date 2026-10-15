@@ -11,8 +11,8 @@
 window.NNBT = window.NNBT || {};
 
 window.NNBT.musicConfig = {
-  youtube: '_ggznNb_er4', // https://youtu.be/_ggznNb_er4
-  title: 'Vết mưa – Vũ Cát Tường',
-  credit: 'Piano cover: Người Nghiện Chơi Đàn',
+  youtube: 'FN7ALfpGxiI', // https://youtu.be/FN7ALfpGxiI — MV chính thức (đổi bài ngày 16/10/2026, trước đây là "Vết mưa" piano cover)
+  title: 'Nơi này có anh – Sơn Tùng M-TP',
+  credit: 'MV chính thức: Sơn Tùng M-TP Official',
   volume: 0.5
 };
