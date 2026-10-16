@@ -5,7 +5,9 @@
  * - Nhạc TỰ CHẠY từ cú chạm / phím bấm đầu tiên (vd nút "Bắt đầu") — trình duyệt không cho phát tiếng
  *   trước khi người xem tương tác — rồi chạy liền một mạch qua mọi màn hình, không bắt đầu lại khi đổi trang.
  * - Chỉ dừng khi người chơi tắt tiếng (audio.muted trong store) bằng nút trên thanh trên cùng.
- * - Hết bài thì phát lại từ đầu; to dần / nhỏ dần khi bật tắt; tạm dừng khi chuyển sang tab trình duyệt khác.
+ * - Danh sách bài (cfg.tracks): hết bài này tự sang bài sau, hết bài cuối quay lại bài đầu; mỗi bài có thể bỏ qua
+ *   đoạn mở đầu (start, giây). To dần / nhỏ dần khi bật tắt; tạm dừng khi chuyển sang tab trình duyệt khác.
+ * - Một bài lỗi (bị gỡ, tắt nhúng) thì bỏ qua sang bài kế; tất cả đều lỗi thì khung nhạc tự ẩn.
  * - Không tải được YouTube (mất mạng, video bị gỡ hoặc tắt nhúng) → khung nhạc và nút âm thanh tự ẩn.
  */
 (function (NNBT) {
@@ -14,7 +16,15 @@
   const cfg = NNBT.musicConfig || {};
   const FADE_MS = 1600;
   const VOLUME = Math.round(100 * (typeof cfg.volume === 'number' ? Math.min(1, Math.max(0, cfg.volume)) : 0.5));
-  const START = typeof cfg.start === 'number' && cfg.start > 0 ? Math.floor(cfg.start) : 0; // bỏ qua đoạn mở đầu (giây)
+  // Danh sách bài; vẫn nhận cấu hình một bài kiểu cũ (youtube/start/title/credit).
+  const TRACKS = (Array.isArray(cfg.tracks) && cfg.tracks.length ? cfg.tracks : (cfg.youtube ? [cfg] : []))
+    .filter((t) => t && t.youtube)
+    .map((t) => ({
+      id: t.youtube,
+      start: typeof t.start === 'number' && t.start > 0 ? Math.floor(t.start) : 0, // bỏ qua đoạn mở đầu (giây)
+      title: t.title || '',
+      credit: t.credit || ''
+    }));
 
   let player = null;
   let card = null;
@@ -24,6 +34,10 @@
   let playing = false;    // ý định hiện tại: đang phát hay đã dừng
   let volume = VOLUME;
   let fadeTimer = null;
+  let current = 0;        // bài đang phát trong TRACKS
+  let failures = 0;       // số bài lỗi liên tiếp (để không lặp vô hạn khi mọi bài đều lỗi)
+  let titleEl = null;
+  let creditEl = null;
 
   function loadApi() {
     return new Promise((resolve, reject) => {
@@ -49,11 +63,11 @@
         el('span', { class: 'music-card__disc', 'aria-hidden': 'true' }),
         el('span', { class: 'music-card__text' }, [
           el('span', { class: 'music-card__label', text: NNBT.story.ui.music.credit }),
-          el('span', { class: 'music-card__title', text: cfg.title || '' })
+          titleEl = el('span', { class: 'music-card__title', text: TRACKS[0].title })
         ])
       ]),
       el('div', { class: 'music-card__player' }, [slot]),
-      cfg.credit ? el('p', { class: 'music-card__credit', text: cfg.credit }) : null
+      creditEl = el('p', { class: 'music-card__credit', text: TRACKS[0].credit })
     ]);
     document.body.append(card);
     document.body.classList.add('has-music-card');
@@ -69,7 +83,7 @@
   function whenReady() {
     if (ready) return ready;
     ready = new Promise((resolve) => {
-      if (!cfg.youtube) { resolve(false); return; }
+      if (!TRACKS.length) { resolve(false); return; }
       let done = false;
       const finish = (ok) => {
         if (done) return;
@@ -84,23 +98,24 @@
       loadApi().then((YT) => {
         player = new YT.Player(slot, {
           host: 'https://www.youtube-nocookie.com',
-          videoId: cfg.youtube,
+          videoId: TRACKS[0].id,
           width: 200,
           height: 200,
-          playerVars: { playsinline: 1, rel: 0, controls: 1, start: START },
+          playerVars: { playsinline: 1, rel: 0, controls: 1, start: TRACKS[0].start },
           events: {
             onReady: () => { player.setVolume(VOLUME); finish(true); },
             onError: () => {
+              // Bài này không phát được → thử bài kế; mọi bài đều lỗi thì ẩn khung nhạc.
+              failures += 1;
+              if (done && failures < TRACKS.length) { nextTrack(); return; }
               playing = false;
               if (done) { available = false; removeCard(); hideSoundButton(); }
               finish(false);
             },
             onStateChange: (e) => {
-              // Hết bài → phát lại từ đầu (nếu vẫn đang bật nhạc).
-              if (e.data === YT.PlayerState.ENDED && playing) {
-                player.seekTo(START, true);
-                player.playVideo();
-              }
+              if (e.data === YT.PlayerState.PLAYING) failures = 0;
+              // Hết bài → sang bài kế (hoặc phát lại nếu chỉ có một bài), khi vẫn đang bật nhạc.
+              if (e.data === YT.PlayerState.ENDED && playing) nextTrack();
               if (card) card.classList.toggle('is-playing', e.data === YT.PlayerState.PLAYING);
             }
           }
@@ -108,6 +123,19 @@
       }).catch(() => finish(false));
     });
     return ready;
+  }
+
+  function nextTrack() {
+    current = (current + 1) % TRACKS.length;
+    const t = TRACKS[current];
+    if (titleEl) titleEl.textContent = t.title;
+    if (creditEl) creditEl.textContent = t.credit;
+    if (TRACKS.length === 1) {
+      player.seekTo(t.start, true);
+      player.playVideo();
+    } else {
+      player.loadVideoById({ videoId: t.id, startSeconds: t.start });
+    }
   }
 
   function hideSoundButton() {
@@ -181,8 +209,8 @@
     init,
     whenReady,
     toggle,
-    configured: !!cfg.youtube,
-    title: cfg.title || '',
+    configured: TRACKS.length > 0,
+    title: TRACKS.map((t) => t.title).filter(Boolean).join(' · '),
     isPlaying: () => !!player && !!window.YT && player.getPlayerState && player.getPlayerState() === window.YT.PlayerState.PLAYING,
     position: () => (player && player.getCurrentTime ? player.getCurrentTime() : 0)
   };
