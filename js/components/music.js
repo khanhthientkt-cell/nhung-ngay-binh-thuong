@@ -14,6 +14,7 @@
   const cfg = NNBT.musicConfig || {};
   const FADE_MS = 1600;
   const VOLUME = Math.round(100 * (typeof cfg.volume === 'number' ? Math.min(1, Math.max(0, cfg.volume)) : 0.5));
+  const START = typeof cfg.start === 'number' && cfg.start > 0 ? Math.floor(cfg.start) : 0; // bỏ qua đoạn mở đầu (giây)
 
   let player = null;
   let card = null;
@@ -86,7 +87,7 @@
           videoId: cfg.youtube,
           width: 200,
           height: 200,
-          playerVars: { playsinline: 1, rel: 0, controls: 1 },
+          playerVars: { playsinline: 1, rel: 0, controls: 1, start: START },
           events: {
             onReady: () => { player.setVolume(VOLUME); finish(true); },
             onError: () => {
@@ -97,7 +98,7 @@
             onStateChange: (e) => {
               // Hết bài → phát lại từ đầu (nếu vẫn đang bật nhạc).
               if (e.data === YT.PlayerState.ENDED && playing) {
-                player.seekTo(0, true);
+                player.seekTo(START, true);
                 player.playVideo();
               }
               if (card) card.classList.toggle('is-playing', e.data === YT.PlayerState.PLAYING);
